@@ -142,6 +142,7 @@ th{color:var(--mute);font-weight:500;font-size:12px}
 .btns{display:flex;gap:8px;margin-top:14px}.btns button{flex:1;padding:13px}
 .toast{position:fixed;left:50%;top:calc(12px + var(--st));transform:translateX(-50%);background:#000d;color:#fff;padding:10px 16px;border-radius:12px;z-index:6000;font-size:14px;display:none;max-width:90%;text-align:center}
 .leaflet-popup-content{color:#111;font-size:13px}
+.mapsw{background:#0a0d0bdd;color:#fff;border:1px solid #fff4;border-radius:10px;padding:6px 10px;font-size:12px;font-weight:700}
 .leaflet-popup-content button{background:#22c55e;color:#04210f;padding:6px 10px;margin-top:6px;font-weight:700}
 .chips{overflow-x:auto;white-space:nowrap;margin:6px 0 4px;-webkit-overflow-scrolling:touch}
 .mapbar{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}
@@ -272,20 +273,21 @@ th{color:var(--mute);font-weight:500;font-size:12px}
 <section class="page" id="p-course">
   <div class="hdr"><h2>코스</h2><div style="flex:none"><span class="chip on" id="mSpot" style="margin:0">명소</span> <span class="chip" id="mDraw" style="margin:0">코스 그리기</span> <span class="chip" id="mNav" style="margin:0">길안내</span></div></div>
   <div class="chips" id="regionChips"></div>
-  <div id="courseMap"></div>
+  <div id="cmWrap" style="position:relative"><div id="courseMap"></div></div>
+  <div class="mapbar" id="traceBar" style="display:none;align-items:center"></div>
   <div class="mapbar" id="drawBar" style="display:none">
     <b id="drawDist" style="flex:1 0 100%;font-size:17px"></b>
-    <button class="sm" id="dUndo">되돌리기</button><button class="sm" id="dLoop">출발점으로 닫기</button><button class="sm" id="dBack">왕복</button><button class="sm danger" id="dClear">지우기</button><button class="sm pri" id="dSave">저장</button>
+    <button class="sm" id="dUndo">되돌리기</button><button class="sm" id="dLoop">출발점으로 닫기</button><button class="sm" id="dBack">왕복</button><button class="sm danger" id="dClear">지우기</button><button class="sm pri" id="dSave">저장</button><button class="sm" id="dTrace">📷 캡처 따라 그리기</button>
   </div>
   <div id="navPanel" style="display:none"></div>
   <div class="mapbar"><button class="sm" id="btnMyLoc">📍 내 위치</button></div>
-  <div class="card"><b>내 코스</b><div class="list" id="courseList"></div></div>
-  <p class="small mute">명소 위치는 대략적인 값이에요. 저장한 코스로 달리면 회전 지점과 코스 이탈을 음성으로 안내해요. 코스 고저도·업힐 안내·파일 불러오기는 다음 업데이트에서 추가돼요.</p>
+  <div class="card"><div class="row"><b>내 코스</b><span style="flex:none"><button class="sm" id="cImport">📂 GPX·KML 불러오기</button> <i class="info" data-info="import">?</i></span></div><div class="list" id="courseList"></div></div>
+  <p class="small mute">명소 위치는 대략적인 값이에요. 저장한 코스로 달리면 회전 지점, 업힐, 코스 이탈을 음성으로 안내해요. 지도 오른쪽 위 버튼으로 일반·위성 지도를 바꿀 수 있어요.</p>
 </section>
 
 <!-- ===================== 기록 ===================== -->
 <section class="page" id="p-log">
-  <div class="hdr"><h2>기록</h2><button class="sm" id="btnGoal">월 목표</button></div>
+  <div class="hdr"><h2>기록</h2><div class="row" style="flex:none;gap:6px"><button class="sm" id="btnAllMap">🗺️ 전체 경로</button><button class="sm" id="btnGoal">월 목표</button></div></div>
   <div class="card">
     <div class="row"><div><div class="lbl" id="mLabel"></div><div class="num" id="mKm">0<small>km</small></div></div><div style="text-align:right" class="sub" id="mGoalTxt"></div></div>
     <div class="bar" style="height:10px"><i id="mBar"></i></div>
@@ -304,7 +306,7 @@ th{color:var(--mute);font-weight:500;font-size:12px}
     <div class="it" data-go="races"><div><svg class="i"><use href="#i-flag"/></svg><div><b>대회</b><div class="sub">대회 찾기, 내 대회 캘린더, 맞춤 훈련 계획</div></div></div>›</div>
     <div class="it" data-go="calc"><div><svg class="i"><use href="#i-pace"/></svg><div><b>페이스 계산</b><div class="sub">기록으로 예상 기록·훈련 페이스 계산</div></div></div>›</div>
     <div class="it" data-go="fuel"><div><svg class="i"><use href="#i-drop"/></svg><div><b>보급 알림</b><div class="sub">자동·수동 (물, 에너지젤, 이온음료, 소금)</div></div></div>›</div>
-    <div class="it" data-go="nav"><div><svg class="i"><use href="#i-map"/></svg><div><b>길안내</b><div class="sub">코스 내비게이션, 티맵 키</div></div></div>›</div>
+    <div class="it" data-go="nav"><div><svg class="i"><use href="#i-map"/></svg><div><b>길안내·지도</b><div class="sub">코스 내비게이션, 업힐 안내, 지도 종류, 티맵·브이월드 키</div></div></div>›</div>
     <div class="it" data-go="stretch"><div><svg class="i"><use href="#i-body"/></svg><div><b>스트레칭</b><div class="sub">달린 뒤 6가지 부위, 음성 타이머</div></div></div>›</div>
     <div class="it" data-go="badge"><div><svg class="i"><use href="#i-trophy"/></svg><div><b>배지</b><div class="sub">달성한 배지 모아 보기</div></div></div>›</div>
     <div class="it" data-go="voice"><div><svg class="i"><use href="#i-voice"/></svg><div><b>음성·캐릭터</b><div class="sub">캐릭터, 응원, 안내 항목, 가민과 함께 쓰기</div></div></div>›</div>
@@ -314,7 +316,7 @@ th{color:var(--mute);font-weight:500;font-size:12px}
     <div class="it" data-go="backup"><div><svg class="i"><use href="#i-save"/></svg><div><b>백업</b><div class="sub">기록 내보내기·가져오기</div></div></div>›</div>
     <div class="it" data-go="help"><div><svg class="i"><use href="#i-gear"/></svg><div><b>사용법</b><div class="sub">이어폰 조작, 주머니 모드, 홈 화면 추가</div></div></div>›</div>
   </div>
-  <p class="small mute" style="text-align:center">Just Run · 2차 버전</p>
+  <p class="small mute" style="text-align:center">Just Run · 3차 버전</p>
 </section>
 
 <nav id="nav">
@@ -764,7 +766,7 @@ async function startRun(){if(R.state!=='idle')return;
  $('#btnNext').style.display=R.steps.length?'':'none';$('#btnLap').style.display=mode==='track'?'':'none';
  $('#lapCard').style.display=mode==='track'?'block':'none';
  let m=C().start(R.workout.name);if(mode==='track')m+=` 트랙 모드, 한 바퀴 ${R.lapLen}미터.`;if(mode==='treadmill')m+=' 트레드밀 모드입니다.';say(m,{force:true});
- if(mode==='outdoor'){if(R._navStart)setTimeout(()=>{if(R.state!=='idle'){navInit(R._navStart,'dest');drawNavLine()}},300);else if(R.course&&S.settings.courseNav!==false&&R.course.pts.length>1)setTimeout(()=>{if(R.state!=='idle')navInit(mkRoute(R.course.pts,R.course.steps||null,null,'course'),'course')},300)}
+ if(mode==='outdoor'){if(R._navStart)setTimeout(()=>{if(R.state!=='idle'){navInit(R._navStart,'dest');drawNavLine()}},300);else if(R.course&&S.settings.courseNav!==false&&R.course.pts.length>1)setTimeout(()=>{if(R.state!=='idle'){const rt=mkRoute(R.course.pts,R.course.steps||null,null,'course');if(R.course.elev){rt.elev=R.course.elev;rt.hills=detectHills(rt.elev)}else attachHills(rt);navInit(rt,'course')}},300)}
  if(R.steps.length)setTimeout(()=>{if(R.state!=='idle')announceStep()},R._navStart||R.course?2500:400);
  initRunMap();renderSplits();renderLaps();updState();Ear.sync();renderRun();buildStatGrids()}
 function pauseRun(){if(R.state!=='running'&&R.state!=='auto')return;tick();R.state='paused';say(C().pause,{low:true});updState();Ear.sync();renderRun()}
@@ -787,7 +789,7 @@ function endRun(keep){if(R.state==='idle')return;clearInterval(tickTimer);gpsSto
  let r=null;if(keep){r=snapshot();S.runs.unshift(r);if(!save('runs')){S.runs.shift();r=null}else{
   if(r.shoe){const sh=S.shoes.find(x=>x.id===r.shoe);if(sh){sh.km=(sh.km||0)+r.dist/1000;save('shoes')}}
   learnStride(r);say(C().finish(readDist(r.dist),readDur(r.sec),readPace(paceOf(r))),{force:true})}}
- store.del('live');const char=R.char;resetR();renderNav();window._navRoute=null;if(Ear.on&&Ear.audio){Ear.audio.pause();Ear.setState('paused');Ear.meta()}
+ store.del('live');const char=R.char;resetR();window._manualShoe=false;renderNav();window._navRoute=null;if(Ear.on&&Ear.audio){Ear.audio.pause();Ear.setState('paused');Ear.meta()}
  document.body.classList.remove('running');go('home');if(r)setTimeout(()=>openRun(r.id,true),300)}
 
 /* ================= 길안내 / 코스 내비게이션 ================= */
@@ -808,18 +810,18 @@ function geoSteps(pts){const steps=[];if(pts.length<3)return steps;const cum=cum
  return steps}
 function mkRoute(pts,steps,dest,src){const cum=cumDist(pts);return{pts,cum,dist:cum[cum.length-1],steps:steps||geoSteps(pts),dest:dest||pts[pts.length-1],src}}
 
-async function fetchRoute(from,to){const key=(S.settings.tmapKey||'').trim();
- if(key){try{return await tmapRoute(from,to,key)}catch(e){toast('티맵 경로 검색 실패: 공개 지도로 다시 찾아요')}}
- return await osmRoute(from,to)}
-async function osmRoute(from,to){const u=`https://routing.openstreetmap.de/routed-foot/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full&geometries=geojson&steps=true`;
+async function fetchRoute(from,to,o={}){const key=(S.settings.tmapKey||'').trim(),prof=o.profile||'foot',via=o.via||[];let r=null;
+ if(key&&prof==='foot'&&via.length<=5){try{r=await tmapRoute(from,to,key,via)}catch(e){toast('티맵 경로 검색 실패: 공개 지도로 다시 찾아요')}}
+ if(!r)r=await osmRoute(from,to,prof,via);r.profile=prof;r.via=via;return r}
+async function osmRoute(from,to,prof='foot',via=[]){const cs=[from,...via,to].map(p=>`${p[1]},${p[0]}`).join(';');const u=`https://routing.openstreetmap.de/routed-${prof==='bike'?'bike':'foot'}/route/v1/driving/${cs}?overview=full&geometries=geojson&steps=true`;
  const r=await fetch(u);if(!r.ok)throw new Error('route '+r.status);const j=await r.json();if(!j.routes||!j.routes.length)throw new Error('경로 없음');
  const rt=j.routes[0],pts=rt.geometry.coordinates.map(c=>[c[1],c[0]]),cum=cumDist(pts);const steps=[];
- (rt.legs[0].steps||[]).forEach(s=>{const m=s.maneuver||{};if(m.type==='depart'||m.type==='arrive')return;const mod=m.modifier||'straight';if((m.type==='continue'||m.type==='new name')&&(mod==='straight'||mod.startsWith('slight')))return;if(mod==='straight'&&m.type!=='roundabout')return;
+ rt.legs.flatMap(l=>l.steps||[]).forEach(s=>{const m=s.maneuver||{};if(m.type==='depart'||m.type==='arrive')return;const mod=m.modifier||'straight';if((m.type==='continue'||m.type==='new name')&&(mod==='straight'||mod.startsWith('slight')))return;if(mod==='straight'&&m.type!=='roundabout')return;
   const loc=[m.location[1],m.location[0]];const pr=project(pts,cum,loc);let text=TURN_TXT[mod]||'방향 전환';if(m.type==='roundabout'||m.type==='rotary')text='회전교차로';
   steps.push({at:pr.along,loc,kind:mod,text,name:s.name||''})});
  return mkRoute(pts,steps,to,'osm')}
-async function tmapRoute(from,to,key){const r=await fetch('https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json',appKey:key},
-  body:JSON.stringify({startX:String(from[1]),startY:String(from[0]),endX:String(to[1]),endY:String(to[0]),startName:'출발',endName:'도착',reqCoordType:'WGS84GEO',resCoordType:'WGS84GEO'})});
+async function tmapRoute(from,to,key,via=[]){const r=await fetch('https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json',appKey:key},
+  body:JSON.stringify({startX:String(from[1]),startY:String(from[0]),endX:String(to[1]),endY:String(to[0]),startName:'출발',endName:'도착',reqCoordType:'WGS84GEO',resCoordType:'WGS84GEO',...(via.length?{passList:via.map(p=>`${p[1]},${p[0]}`).join('_')}:{})})});
  if(!r.ok)throw new Error('tmap '+r.status);const j=await r.json();const pts=[];const pnts=[];
  (j.features||[]).forEach(f=>{if(f.geometry.type==='LineString')f.geometry.coordinates.forEach(c=>{const p=[c[1],c[0]];const l=pts[pts.length-1];if(!l||l[0]!==p[0]||l[1]!==p[1])pts.push(p)});else if(f.geometry.type==='Point')pnts.push(f)});
  if(pts.length<2)throw new Error('경로 없음');const cum=cumDist(pts);
@@ -838,12 +840,13 @@ async function navUpdate(pt){const N=R.nav;if(!N||N.arrived)return;const rt=N.ro
  let pr=project(rt.pts,rt.cum,pt,N.seg-3,N.seg+40);if(pr.cross>40)pr=project(rt.pts,rt.cum,pt);
  N.cross=pr.cross;const now=Date.now();
  if(pr.cross>35){N.offSince=N.offSince||now;if(now-N.offSince>8000&&!N.offSaid){N.offSaid=true;say(N.kind==='dest'?'경로를 벗어났습니다. 새 경로를 찾을게요.':'코스를 벗어났습니다. 코스로 돌아가 주세요.');
-   if(N.kind==='dest'&&now-N.lastReroute>30000){N.lastReroute=now;try{const nr=await fetchRoute(pt,rt.dest);if(R.nav===N){N.route=nr;N.seg=0;N.said={};N.offSince=null;N.offSaid=false;drawNavLine();say(`새 경로, 남은 거리 ${readDist(nr.dist)}.`)}}catch(e){}}}
+   if(N.kind==='dest'&&now-N.lastReroute>30000){N.lastReroute=now;try{const nr=await attachHills(await fetchRoute(pt,rt.dest,{profile:rt.profile,via:(rt.via||[]).filter(v=>project(rt.pts,rt.cum,v).along>N.along+50)}));if(R.nav===N){N.route=nr;N.seg=0;N.said={};N.offSince=null;N.offSaid=false;drawNavLine();say(`새 경로, 남은 거리 ${readDist(nr.dist)}.`)}}catch(e){}}}
   renderNav();return}
  if(N.offSince){if(N.offSaid)say('경로로 돌아왔습니다.',{low:true});N.offSince=null;N.offSaid=false}
  N.seg=pr.seg;N.along=pr.along;
  const rem=rt.dist-N.along;
  if(rem<25||hav(pt,rt.dest)<20&&N.along>rt.dist*.8){N.arrived=true;say(N.kind==='dest'?'목적지에 도착했습니다. 수고하셨어요!':'코스 완주! 수고하셨어요!');renderNav();return}
+ hillCheck(N);
  const i=rt.steps.findIndex(s=>s.at>N.along+3);if(i>=0){const s=rt.steps[i],d=s.at-N.along,prevAt=i>0?rt.steps[i-1].at:0;
   if(d<=200&&d>110&&s.at-prevAt>220&&!N.said[i+'f']){N.said[i+'f']=1;say(`${Math.round(d/50)*50}미터 앞, ${stepPhrase(s)}.`)}
   else if(d<=45&&!N.said[i+'n']){N.said[i+'n']=1;N.said[i+'f']=1;say(`곧 ${stepPhrase(s)}.`)}}
@@ -853,9 +856,29 @@ function renderNav(){const el=$('#navBan');if(!R.nav){el.style.display='none';re
  const off=N.offSince&&Date.now()-N.offSince>8000;el.style.background=N.arrived?'var(--g2)':off?'#b45309':'';
  if(N.arrived){el.innerHTML=`<div class="navArw">🏁</div><div><b>${N.kind==='dest'?'목적지 도착':'코스 완주'}</b><div class="sub">수고하셨어요!</div></div>`;return}
  if(N.offSince&&Date.now()-N.offSince>8000){el.innerHTML=`<div class="navArw" style="color:var(--warn)">⚠</div><div><b>${N.kind==='dest'?'경로 이탈 · 재탐색 중':'코스 이탈'}</b><div class="sub">경로에서 ${Math.round(N.cross)}m 떨어져 있어요</div></div>`;return}
- const nx=navNext();el.innerHTML=nx?`<div class="navArw">${TURN_ARW[nx.s.kind]||'↑'}</div><div><b>${nx.d<1000?Math.round(nx.d/10)*10+'m':(nx.d/1000).toFixed(1)+'km'} 후 ${esc(nx.s.text)}</b><div class="sub">${nx.s.name?esc(nx.s.name)+' · ':''}남은 거리 ${(rem/1000).toFixed(2)}km</div></div>`
-  :`<div class="navArw">↑</div><div><b>직진</b><div class="sub">남은 거리 ${(rem/1000).toFixed(2)}km</div></div>`}
+ const hl=nextHill(N),hTxt=hl?` · ⛰ ${hl.start>N.along?Math.round((hl.start-N.along)/10)*10+'m 앞 ':''}${hl.type==='up'?'업힐':'다운힐'} ${hl.len}m ${hl.grade}%`:'';
+ const nx=navNext();el.innerHTML=nx?`<div class="navArw">${TURN_ARW[nx.s.kind]||'↑'}</div><div><b>${nx.d<1000?Math.round(nx.d/10)*10+'m':(nx.d/1000).toFixed(1)+'km'} 후 ${esc(nx.s.text)}</b><div class="sub">${nx.s.name?esc(nx.s.name)+' · ':''}남은 거리 ${(rem/1000).toFixed(2)}km${hTxt}</div></div>`
+  :`<div class="navArw">↑</div><div><b>직진</b><div class="sub">남은 거리 ${(rem/1000).toFixed(2)}km${hTxt}</div></div>`}
 function drawNavLine(){if(typeof runCourse!=='undefined'&&runCourse&&R.nav)runCourse.setLatLngs(R.nav.route.pts)}
+
+/* ---- 고도·업힐 ---- */
+function resample(pts,step=50){const cum=cumDist(pts),tot=cum[cum.length-1],out=[];let j=0;for(let d=0;d<=tot;d+=step){while(j<cum.length-2&&cum[j+1]<d)j++;const f=(d-cum[j])/Math.max(1e-6,cum[j+1]-cum[j]);out.push([d,[pts[j][0]+(pts[j+1][0]-pts[j][0])*f,pts[j][1]+(pts[j+1][1]-pts[j][1])*f]])}
+ if(!out.length||out[out.length-1][0]<tot)out.push([tot,pts[pts.length-1]]);return out}
+async function fetchElev(pts){if(pts.length<2)return null;const tot=pathLen(pts);const step=Math.max(30,Math.ceil(tot/300));const smp=resample(pts,step);const ele=[];
+ for(let i=0;i<smp.length;i+=100){const ch=smp.slice(i,i+100);const u=`https://api.open-meteo.com/v1/elevation?latitude=${ch.map(x=>x[1][0].toFixed(5)).join(',')}&longitude=${ch.map(x=>x[1][1].toFixed(5)).join(',')}`;const r=await fetch(u);if(!r.ok)throw new Error('elev');const j=await r.json();ele.push(...j.elevation)}
+ return smp.map((x,i)=>[Math.round(x[0]),Math.round(ele[i]*10)/10])}
+function elevStats(el){let g=0,l=0;for(let i=1;i<el.length;i++){const d=el[i][1]-el[i-1][1];if(d>0)g+=d;else l-=d}const ys=el.map(e=>e[1]);return{gain:Math.round(g),loss:Math.round(l),max:Math.round(Math.max(...ys)),min:Math.round(Math.min(...ys))}}
+function smoothEl(el){return el.map((e,i)=>{const a=el[Math.max(0,i-1)][1],b=e[1],c=el[Math.min(el.length-1,i+1)][1];return[e[0],(a+b+c)/3]})}
+function detectHills(el){if(!el||el.length<3)return[];const G=(S.settings.hillGrade||3)/100,MIN=S.settings.hillLen||100;const sm=smoothEl(el);const segs=[];
+ for(let i=1;i<sm.length;i++){const dx=sm[i][0]-sm[i-1][0],dz=sm[i][1]-sm[i-1][1];segs.push({s:sm[i-1][0],e:sm[i][0],dz,g:dx?dz/dx:0})}
+ const out=[];let cur=null;const close=()=>{if(cur){const len=cur.e-cur.s;if(len>=MIN&&Math.abs(cur.dz)/len>=G*0.8)out.push({type:cur.t,start:Math.round(cur.s),end:Math.round(cur.e),len:Math.round(len),gain:Math.round(Math.abs(cur.dz)),grade:Math.round(Math.abs(cur.dz)/len*1000)/10});cur=null}};
+ segs.forEach(sg=>{const t=sg.g>=G?'up':sg.g<=-G?'down':null;if(t&&cur&&cur.t===t){cur.e=sg.e;cur.dz+=sg.dz}else if(t){close();cur={t,s:sg.s,e:sg.e,dz:sg.dz}}else if(cur&&Math.abs(sg.g)<G&&(cur.t==='up'?sg.g>-0.005:sg.g<0.005)&&sg.e-sg.s<=60&&!cur.gap){cur.gap=1;cur.e=sg.e;cur.dz+=sg.dz}else close()});close();return out}
+async function attachHills(route){try{if(!route.elev)route.elev=await fetchElev(route.pts);route.hills=detectHills(route.elev);return route}catch(e){return route}}
+function hillCheck(N){if(S.settings.hillOn===false)return;const hs=N.route.hills||[];hs.forEach((h,i)=>{const d=h.start-N.along;const nm=h.type==='up'?'업힐':'다운힐';
+ if(d<=220&&d>60&&!N.said['h'+i]){N.said['h'+i]=1;say(`${Math.round(d/50)*50}미터 앞부터 ${Math.round(h.len/50)*50}미터 ${nm}입니다. 평균 경사 ${Math.round(h.grade)}퍼센트.`)}
+ else if(d<=60&&d>-20&&!N.said['h'+i]){N.said['h'+i]=1;say(`곧 ${nm}, ${Math.round(h.len/50)*50}미터.`)}
+ if(h.type==='up'&&N.along>=h.end&&N.along<h.end+80&&N.said['h'+i]&&!N.said['he'+i]){N.said['he'+i]=1;say('업힐 끝! 호흡을 고르세요.')}})}
+function nextHill(N){const hs=(N.route.hills||[]).filter(h=>h.end>N.along);return hs[0]||null}
 
 /* ================= 달리기 화면 ================= */
 const cell=(id,lbl,info)=>`<div class="st"><b id="${id}">-</b><span>${lbl}${info?infoBtn(info):''}</span></div>`;
@@ -918,9 +941,19 @@ $('#pocket').addEventListener('dblclick',()=>{$('#pocketOff').style.display='blo
 $('#pocketOff').onclick=e=>{e.stopPropagation();Pocket.off();setView(runView)};
 
 /* ================= 지도 ================= */
-const TILE='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',ATTR='&copy; OpenStreetMap';
 const hasL=()=>typeof L!=='undefined';
-function mkMap(el,center,zoom){const m=L.map(el,{zoomControl:false}).setView(center||[36.35,127.9],zoom||7);L.tileLayer(TILE,{maxZoom:19,attribution:ATTR}).addTo(m);return m}
+const TILES={osm:{n:'일반',url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',attr:'&copy; OpenStreetMap'},
+ sat:{n:'위성',url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attr:'&copy; Esri'},
+ vworld:{n:'브이월드',url:'https://api.vworld.kr/req/wmts/1.0.0/{key}/Base/{z}/{y}/{x}.png',attr:'&copy; 브이월드',key:1},
+ vsat:{n:'브이월드 위성',url:'https://api.vworld.kr/req/wmts/1.0.0/{key}/Satellite/{z}/{y}/{x}.jpeg',attr:'&copy; 브이월드',key:1}};
+function mapTypes(){return Object.keys(TILES).filter(k=>!TILES[k].key||S.settings.vworldKey)}
+function curMapType(){let t=S.settings.mapType||(S.settings.vworldKey?'vworld':'osm');if(!mapTypes().includes(t))t='osm';return t}
+const ALL_MAPS=[];
+function tileFor(t){const d=TILES[t];return L.tileLayer(d.url,{maxZoom:19,maxNativeZoom:t==='sat'?18:19,attribution:d.attr,key:S.settings.vworldKey||''})}
+function setMapType(t){S.settings.mapType=t;save('settings');ALL_MAPS.forEach(o=>{if(!o.m._container||!document.body.contains(o.m._container))return;o.m.removeLayer(o.layer);o.layer=tileFor(t).addTo(o.m);o.layer.bringToBack();o.btn&&(o.btn.textContent=TILES[t].n)})}
+function mkMap(el,center,zoom){const m=L.map(el,{zoomControl:false,zoomSnap:.25}).setView(center||[36.35,127.9],zoom||7);const o={m,layer:tileFor(curMapType()).addTo(m)};
+ const Ctl=L.Control.extend({onAdd(){const b=L.DomUtil.create('button','mapsw');b.textContent=TILES[curMapType()].n;L.DomEvent.disableClickPropagation(b);b.onclick=e=>{e.preventDefault();const ts=mapTypes(),i=ts.indexOf(curMapType());setMapType(ts[(i+1)%ts.length]);toast('지도: '+TILES[curMapType()].n)};o.btn=b;return b}});
+ new Ctl({position:'topright'}).addTo(m);for(let i=ALL_MAPS.length-1;i>=0;i--)if(!document.body.contains(ALL_MAPS[i].m._container))ALL_MAPS.splice(i,1);ALL_MAPS.push(o);return m}
 let runMap,runLine,runCourse,runMe,lastPan=0;
 function initRunMap(){if(R.mode==='treadmill')return;if(!hasL()){$('#runMap').innerHTML='<p class="sub" style="padding:14px">지도를 불러오지 못했어요 (인터넷 연결 확인)</p>';return}
  if(!runMap){runMap=mkMap('runMap',window._lastFix||[36.35,127.9],16);runLine=L.polyline([],{color:'#22c55e',weight:5}).addTo(runMap);runCourse=L.polyline([],{color:'#3b82f6',weight:4,dashArray:'6 8'}).addTo(runMap)}
@@ -953,8 +986,8 @@ function weekStreak(){if(!S.runs.length)return 0;const wk=d=>mondayOf(d).getTime
 function injuryRisk(){const now=Date.now(),D=86400000;const l7=sumDist(S.runs.filter(r=>now-r.date<7*D));const p=sumDist(S.runs.filter(r=>now-r.date>=7*D&&now-r.date<35*D))/4;return p>5&&l7>p*1.3?{l7,p,pct:Math.round((l7/p-1)*100)}:null}
 function renderHome(){if(R.state!=='idle')return;
  const today=ymd(new Date()),tr=S.runs.filter(r=>ymd(r.date)===today);
- if(tr.length){const d=tr.reduce((a,r)=>a+r.dist,0),s=tr.reduce((a,r)=>a+r.sec,0);$('#hToday').innerHTML=`<div class="lbl">오늘 달린 기록</div><div class="num">${fmtKm(d)}<small>km</small></div><div class="sub">${fmtTime(s)} · ${fmtPace(s/(d/1000))}/km</div>`;$('#hToday').onclick=()=>openRun(tr[0].id)}
- else if(S.runs.length){const r=S.runs[0];$('#hToday').innerHTML=`<div class="lbl">최근 달리기</div><div class="num">${fmtKm(r.dist)}<small>km</small></div><div class="sub">${new Date(r.date).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})} · ${fmtPace(paceOf(r))}/km</div>`;$('#hToday').onclick=()=>openRun(r.id)}
+ if(tr.length){const d=tr.reduce((a,r)=>a+r.dist,0),s=tr.reduce((a,r)=>a+r.sec,0);$('#hToday').innerHTML=`<div style="display:flex;justify-content:space-between;gap:4px"><div><div class="lbl">오늘 달린 기록</div><div class="num">${fmtKm(d)}<small>km</small></div></div>${routeSvg(tr[0].track,44,44)}</div><div class="sub">${fmtTime(s)} · ${fmtPace(s/(d/1000))}/km</div>`;$('#hToday').onclick=()=>openRun(tr[0].id)}
+ else if(S.runs.length){const r=S.runs[0];$('#hToday').innerHTML=`<div style="display:flex;justify-content:space-between;gap:4px"><div><div class="lbl">최근 달리기</div><div class="num">${fmtKm(r.dist)}<small>km</small></div></div>${routeSvg(r.track,44,44)}</div><div class="sub">${new Date(r.date).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})} · ${fmtPace(paceOf(r))}/km</div>`;$('#hToday').onclick=()=>openRun(r.id)}
  else{$('#hToday').innerHTML=`<div class="lbl">오늘 달린 기록</div><div class="num">0<small>km</small></div><div class="sub">첫 달리기를 시작해 보세요</div>`;$('#hToday').onclick=null}
  const pb=pbTable();const key=pb[5000]?5000:pb[1000]?1000:Object.keys(pb)[0];
  $('#hPB').innerHTML=`<div class="lbl">${ico('trophy','s')}최고기록 ›</div>`+(key?`<div class="num">${fmtTime(pb[key].sec)}</div><div class="sub">${PB_D.find(x=>x[0]==key)[1]} · ${new Date(pb[key].date).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})}</div>`:`<div class="num" style="color:var(--mute)">-</div><div class="sub">1km를 달리면 기록돼요</div>`);
@@ -968,7 +1001,7 @@ function renderHome(){if(R.state!=='idle')return;
  renderWkDesc();renderModeOpts();
  const cc=$('#selCourse').value;$('#selCourse').innerHTML='<option value="">코스 선택 안 함</option>'+(window._navRoute?`<option value="nav">🧭 길안내 (${fmtKm(window._navRoute.dist)}km)</option>`:'')+S.courses.map(c=>`<option value="${c.id}">${esc(c.name)} (${fmtKm(c.dist)}km)</option>`).join('');$('#selCourse').value=cc;
  const gc=$('#selGhost').value;$('#selGhost').innerHTML='<option value="">고스트 런 없음</option>'+S.runs.slice(0,40).map(r=>`<option value="${r.id}">👻 ${new Date(r.date).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})} ${fmtKm(r.dist)}km ${fmtPace(paceOf(r))}</option>`).join('');$('#selGhost').value=gc;
- const act=S.shoes.filter(s=>!s.retired);$('#selShoe').innerHTML='<option value="">신발 선택 안 함</option>'+act.map(s=>`<option value="${s.id}">👟 ${esc(s.name)}</option>`).join('');$('#selShoe').value=S.settings.activeShoe&&act.some(s=>s.id===S.settings.activeShoe)?S.settings.activeShoe:'';
+ const act=S.shoes.filter(s=>!s.retired);$('#selShoe').innerHTML='<option value="">신발 선택 안 함</option>'+act.map(s=>`<option value="${s.id}">👟 ${esc(s.name)}</option>`).join('');const sv0=$('#selShoe').dataset.v;if(window._manualShoe&&sv0&&act.some(s=>s.id===sv0))$('#selShoe').value=sv0;else{window._manualShoe=false;autoShoe()}
  // 마일리지
  const now=new Date(),mon=mondayOf(now).getTime(),ms=new Date(now.getFullYear(),now.getMonth(),1).getTime();
  const wk=sumDist(S.runs.filter(r=>r.date>=mon)),mk=sumDist(S.runs.filter(r=>r.date>=ms)),goal=S.settings.monthGoal;
@@ -986,22 +1019,23 @@ function renderHome(){if(R.state!=='idle')return;
  if(location.protocol!=='https:'&&!/localhost|127\.0\.0\.1/.test(location.hostname))$('#insecure').style.display='block'}
 function renderAlerts(){const a=[];
  S.shoes.filter(s=>!s.retired&&(s.km||0)>=s.limit*.9).forEach(s=>a.push(['shoe','',`<b>${esc(s.name)}</b> 누적 ${(s.km||0).toFixed(0)}km<br><span class="mute">교체 시기가 가까워요 (기준 ${s.limit}km)</span>`]));
+ const bk=backupDue();if(bk)a.push(['save','',`<b>백업할 때가 됐어요</b><br><span class="mute">${bk.days?bk.days+'일 동안':'아직'} 백업하지 않았어요 · 새 기록 ${bk.newer}개. 눌러서 백업하세요.</span>`,'backup']);
  const inj=injuryRisk();if(inj)a.push(['warn','bad',`<b>주간 거리 급증</b> ${infoBtn('injury')}<br><span class="mute">최근 7일 ${inj.l7.toFixed(1)}km · 평소보다 ${inj.pct}% 많아요. 회복주를 섞어 주세요.</span>`]);
  if(WX&&Date.now()-WX.t<3*3600000){const pm=pmGrade(WX.pm10,WX.pm25);if(pm==='나쁨'||pm==='매우나쁨')a.push(['warn','bad',`<b>미세먼지 ${pm}</b><br><span class="mute">실외 달리기를 줄이거나 트레드밀을 고려해 보세요.</span>`]);
   if(WX.feel>=30)a.push(['sun','',`<b>더위 주의 · 체감 ${Math.round(WX.feel)}°</b><br><span class="mute">물을 자주 마시고 페이스를 낮춰 주세요.</span>`]);if(WX.feel<=-5)a.push(['snow','',`<b>추위 주의 · 체감 ${Math.round(WX.feel)}°</b><br><span class="mute">워밍업을 충분히 하고 미끄럼에 주의하세요.</span>`])}
- $('#hAlerts').innerHTML=a.map(x=>`<div class="card alert ${x[1]}">${ico(x[0])}<div style="font-size:13px">${x[2]}</div></div>`).join('')}
+ $('#hAlerts').innerHTML=a.map(x=>`<div class="card alert ${x[1]}" ${x[3]?`data-al="${x[3]}" style="cursor:pointer"`:''}>${ico(x[0])}<div style="font-size:13px">${x[2]}</div></div>`).join('');$$('#hAlerts [data-al=backup]').forEach(e=>e.onclick=backupSheet)}
 function renderWkDesc(){const w=getWorkout($('#selWorkout').value);if(!w){$('#hWkDesc').textContent='';return}const st=flatten(w);
  const parts=[];let prev=null;w.blocks.forEach(b=>{const t=b.steps.map(s=>`${s.label} ${stepVal(s)}${s.lo?` ${fmtPace(s.lo)}~${fmtPace(s.hi)}`:''}`).join(' + ');parts.push(b.repeat>1?`(${t}) × ${b.repeat}`:t)});
  $('#hWkDesc').innerHTML=st.length?`${esc(parts.join(' → '))}<br>${wkSummary(w)} · ${CH[w.char||S.settings.char].emoji} ${CH[w.char||S.settings.char].name}`:`목표 없이 자유롭게 · ${CH[S.settings.char].emoji} ${CH[S.settings.char].name}`}
-$('#selWorkout').onchange=()=>{window._manualW=true;renderWkDesc()};
-$$('#modeSeg span').forEach(s=>s.onclick=()=>{selMode=s.dataset.m;$$('#modeSeg span').forEach(x=>x.classList.toggle('on',x===s));renderModeOpts()});
+$('#selWorkout').onchange=()=>{window._manualW=true;renderWkDesc();autoShoe()};
+$$('#modeSeg span').forEach(s=>s.onclick=()=>{selMode=s.dataset.m;$$('#modeSeg span').forEach(x=>x.classList.toggle('on',x===s));renderModeOpts();autoShoe()});
 function renderModeOpts(){const el=$('#modeOpts');const ss=S.settings;
  if(selMode==='track'){el.innerHTML=`레인 <select id="moLane" style="width:auto;padding:4px 6px;display:inline-block">${[1,2,3,4,5,6,7,8].map(n=>`<option ${n==ss.lane?'selected':''}>${n}</option>`).join('')}</select> · 랩 <select id="moAuto" style="width:auto;padding:4px 6px;display:inline-block"><option value="1" ${ss.trackAuto?'selected':''}>자동</option><option value="0" ${!ss.trackAuto?'selected':''}>수동</option></select> <i class="info" data-info="track" style="border-color:#fff;color:#fff">?</i>`;
   el.querySelector('#moLane').onchange=e=>{ss.lane=+e.target.value;save('settings')};el.querySelector('#moAuto').onchange=e=>{ss.trackAuto=e.target.value==='1';save('settings')}}
  else if(selMode==='treadmill')el.innerHTML=`센서로 거리 자동 계산 · 보폭 학습 ${S.cal.length}개 구간 <i class="info" data-info="treadmill" style="border-color:#fff;color:#fff">?</i>`;
  else el.innerHTML='';
  $('#selCourse').style.display=selMode==='treadmill'?'none':''}
-$('#selShoe').onchange=e=>{S.settings.activeShoe=e.target.value||null;save('settings')};
+$('#selShoe').onchange=e=>{window._manualShoe=true;e.target.dataset.v=e.target.value;toast('이번 달리기에만 이 신발을 써요')};
 $('#btnStart').onclick=()=>startRun();
 $('#btnEar').onclick=()=>Ear.enable();
 
@@ -1035,11 +1069,11 @@ function editWk(w,isNew){const cats=['인터벌','LSD','템포','AR','빌드업'
   ${w.blocks.map((b,bi)=>`<div class="blk"><div class="row"><b style="flex:2">블록 ${bi+1}</b><span class="small mute" style="flex:none">반복</span><select style="flex:none;width:76px" data-rep="${bi}">${rng(1,30).map(o=>`<option value="${o.v}" ${o.v==b.repeat?'selected':''}>${o.v}회</option>`).join('')}</select><button class="sm danger" style="flex:none" data-rb="${bi}">✕</button></div>
    ${b.steps.map((s,si)=>`<div class="stp"><div class="row"><input value="${esc(s.label)}" data-f="label" data-b="${bi}" data-s="${si}" placeholder="구간 이름"><button class="sm danger" style="flex:none" data-rs="${bi}-${si}">✕</button></div>
     <div class="row"><select data-f="kind" data-b="${bi}" data-s="${si}" style="flex:1"><option value="time" ${s.kind==='time'?'selected':''}>시간</option><option value="dist" ${s.kind==='dist'?'selected':''}>거리</option><option value="open" ${s.kind==='open'?'selected':''}>제한 없음</option></select>${valBtn(s,bi,si)}</div>
-    <div class="small mute" style="margin-top:8px">이 구간 목표 페이스 (/km)</div>
-    <div class="row" style="margin-top:4px"><button class="sm" data-pl="${bi}-${si}" style="flex:1">${s.lo?'빠른 쪽 '+fmtPace(s.lo):'빠른 쪽 선택'}</button><span style="flex:none">~</span><button class="sm" data-ph="${bi}-${si}" style="flex:1">${s.hi?'느린 쪽 '+fmtPace(s.hi):'느린 쪽 선택'}</button>${s.lo?`<button class="sm ghost" style="flex:none" data-pc="${bi}-${si}">✕</button>`:''}</div></div>`).join('')}
+    <div class="seg2" style="margin:8px 0 4px"><span data-pn="${bi}-${si}" class="${s.lo?'':'on'}">페이스 설정 없음</span><span data-py="${bi}-${si}" class="${s.lo?'on':''}">목표 페이스 설정</span></div>
+    ${s.lo?`<div class="row"><button class="sm" data-pl="${bi}-${si}" style="flex:1">빠른 쪽 ${fmtPace(s.lo)}</button><span style="flex:none">~</span><button class="sm" data-ph="${bi}-${si}" style="flex:1">느린 쪽 ${fmtPace(s.hi)}</button></div>`:''}</div>`).join('')}
    <button class="sm" style="margin-top:8px" data-as="${bi}">+ 구간 추가</button></div>`).join('')}
   <button style="margin-top:10px;width:100%" id="eAddB">+ 블록 추가 (반복 묶음)</button>
-  <p class="small mute">목표 페이스를 비워두면 그 구간은 경보 없이 달려요.</p>
+  <p class="small mute">'페이스 설정 없음'인 구간은 경보 없이 달려요. '제한 없음' 구간도 목표 페이스를 정할 수 있어요.</p>
   <div class="btns"><button id="eNo">취소</button><button class="pri" id="eOk">저장</button></div>`,s=>{
    s.scrollTop=sc;
    const pull=()=>{w.name=s.querySelector('#eName').value.trim()||'내 훈련';w.cat=s.querySelector('#eCat').value;w.char=s.querySelector('#eChar').value;
@@ -1051,7 +1085,8 @@ function editWk(w,isNew){const cats=['인터벌','LSD','템포','AR','빌드업'
    s.querySelectorAll('[data-pv]').forEach(x=>x.onclick=async()=>{pull();const t=st(x.dataset.pv);const v=t.kind==='time'?await pickTime(t.label+' 시간',t.value,4):await pickDist(t.label+' 거리',t.value);if(v){t.value=v}render()});
    s.querySelectorAll('[data-pl]').forEach(x=>x.onclick=async()=>{pull();const t=st(x.dataset.pl);const v=await pickPace('빠른 쪽 페이스',t.lo||(t.hi?t.hi-10:S.settings.easyPace));if(v){t.lo=v;if(!t.hi||t.hi<v)t.hi=v+10}render()});
    s.querySelectorAll('[data-ph]').forEach(x=>x.onclick=async()=>{pull();const t=st(x.dataset.ph);const v=await pickPace('느린 쪽 페이스',t.hi||(t.lo?t.lo+10:S.settings.easyPace));if(v){t.hi=v;if(!t.lo||t.lo>v)t.lo=Math.max(120,v-10)}render()});
-   s.querySelectorAll('[data-pc]').forEach(x=>x.onclick=()=>{pull();const t=st(x.dataset.pc);t.lo=null;t.hi=null;render()});
+   s.querySelectorAll('[data-pn]').forEach(x=>x.onclick=()=>{pull();const t=st(x.dataset.pn);t.lo=null;t.hi=null;render()});
+   s.querySelectorAll('[data-py]').forEach(x=>x.onclick=async()=>{pull();const t=st(x.dataset.py);if(t.lo){return}const v=await pickPace('빠른 쪽 페이스 (목표 범위 시작)',S.settings.easyPace-10);if(v){t.lo=v;const h=await pickPace('느린 쪽 페이스 (목표 범위 끝)',v+20);t.hi=h&&h>=v?h:v+20}render()});
    s.querySelectorAll('[data-as]').forEach(x=>x.onclick=()=>{pull();w.blocks[x.dataset.as].steps.push({label:'달리기',kind:'time',value:300,lo:null,hi:null});render()});
    s.querySelectorAll('[data-rs]').forEach(x=>x.onclick=()=>{pull();const[a,b]=x.dataset.rs.split('-');w.blocks[a].steps.splice(b,1);if(!w.blocks[a].steps.length)w.blocks.splice(a,1);render()});
    s.querySelectorAll('[data-rb]').forEach(x=>x.onclick=()=>{pull();w.blocks.splice(x.dataset.rb,1);render()});
@@ -1250,7 +1285,7 @@ const SPOTS=[
 ['제주','탑동·용두암 해안',33.5170,126.5200,'바다를 따라 달리는 해안 산책로'],
 ['제주','사려니숲길',33.4180,126.6370,'숲 속 흙길. 트레일 러닝 분위기'],
 ];
-let cMap,spotLayer,drawLayer,drawLine,drawPts=[],cMode='spot',region='전체',myMarker;
+let editingCourse=null,cMap,spotLayer,drawLayer,drawLine,drawPts=[],cMode='spot',region='전체',myMarker;
 function renderCourse(){
  const regions=['전체',...new Set(SPOTS.map(s=>s[0]))];
  $('#regionChips').innerHTML=regions.map(r=>`<span class="chip ${r===region?'on':''}" data-r="${r}">${r}</span>`).join('');
@@ -1259,7 +1294,7 @@ function renderCourse(){
  $('#mSpot').classList.toggle('on',cMode==='spot');$('#mDraw').classList.toggle('on',cMode==='draw');$('#mNav').classList.toggle('on',cMode==='nav');
  if(hasL()){
   if(!cMap){cMap=mkMap('courseMap');spotLayer=L.layerGroup().addTo(cMap);drawLayer=L.layerGroup().addTo(cMap);drawLine=L.polyline([],{color:'#22c55e',weight:5}).addTo(cMap);
-   cMap.on('click',e=>{if(cMode==='nav'){setDest([+e.latlng.lat.toFixed(6),+e.latlng.lng.toFixed(6)]);return}if(cMode!=='draw')return;drawPts.push([+e.latlng.lat.toFixed(6),+e.latlng.lng.toFixed(6)]);redrawDraw()})}
+   cMap.on('click',e=>{if(cMode==='nav'){navMapTap([+e.latlng.lat.toFixed(6),+e.latlng.lng.toFixed(6)]);return}if(cMode!=='draw')return;drawPts.push([+e.latlng.lat.toFixed(6),+e.latlng.lng.toFixed(6)]);redrawDraw()})}
   spotLayer.clearLayers();
   if(cMode==='spot'){const list=SPOTS.filter(s=>region==='전체'||s[0]===region);
    list.forEach(s=>{const m=L.circleMarker([s[2],s[3]],{radius:9,color:'#fff',weight:2,fillColor:'#16a34a',fillOpacity:.95}).addTo(spotLayer);
@@ -1267,52 +1302,135 @@ function renderCourse(){
    if(list.length){if(region==='전체')cMap.setView([36.2,127.8],7);else cMap.fitBounds(L.latLngBounds(list.map(s=>[s[2],s[3]])).pad(0.3),{maxZoom:14})}}
   redrawDraw();setTimeout(()=>cMap.invalidateSize(),80)
  }else $('#courseMap').innerHTML='<p class="sub" style="padding:14px">지도를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.</p>';
- renderCourseList();renderNavPanel()}
+ renderCourseList();renderNavPanel();renderTrace()}
 window.drawHere=(la,lo)=>{cMode='draw';renderCourse();cMap.setView([la,lo],15);toast('지도를 탭해 코스 지점을 추가하세요')};
 function redrawDraw(){if(!drawLine)return;drawLine.setLatLngs(drawPts);drawLayer.clearLayers();
  drawPts.forEach((p,i)=>{if(i===0||i===drawPts.length-1)L.circleMarker(p,{radius:6,color:'#fff',weight:2,fillColor:i===0?'#22c55e':'#0a0d0b',fillOpacity:1}).addTo(drawLayer)});
  $('#drawDist').textContent=drawPts.length?`${fmtKm(pathLen(drawPts))} km · ${drawPts.length}개 지점`:'지도를 탭해 지점을 추가하세요'}
 $('#mSpot').onclick=()=>{cMode='spot';renderCourse()};$('#mNav').onclick=()=>{cMode='nav';renderCourse();if(cMap&&window._lastFix&&!destLL)cMap.setView(window._lastFix,15)};$('#mDraw').onclick=()=>{cMode='draw';renderCourse();toast('지도를 탭해 코스 지점을 추가하세요')};
 $('#dUndo').onclick=()=>{drawPts.pop();redrawDraw()};
-$('#dClear').onclick=()=>{drawPts=[];redrawDraw()};
+$('#dClear').onclick=()=>{drawPts=[];editingCourse=null;redrawDraw()};
+$('#dTrace').onclick=traceImage;$('#cImport').onclick=importCourse;
 $('#dLoop').onclick=()=>{if(drawPts.length>2){drawPts.push(drawPts[0]);redrawDraw()}};
 $('#dBack').onclick=()=>{if(drawPts.length>1){drawPts=drawPts.concat(drawPts.slice(0,-1).reverse());redrawDraw()}};
-$('#dSave').onclick=async()=>{if(drawPts.length<2){toast('지점을 2개 이상 찍어 주세요');return}const n=await inputBox('코스 이름',`코스 ${S.courses.length+1}`);if(!n)return;
- S.courses.unshift({id:uid(),name:n,pts:drawPts.slice(),dist:Math.round(pathLen(drawPts))});save('courses');drawPts=[];redrawDraw();renderCourseList();toast('코스를 저장했어요')};
+$('#dSave').onclick=async()=>{if(drawPts.length<2){toast('지점을 2개 이상 찍어 주세요');return}const ed=editingCourse&&S.courses.find(c=>c.id===editingCourse);const n=await inputBox('코스 이름',ed?ed.name:`코스 ${S.courses.length+1}`);if(!n)return;
+ if(ed){Object.assign(ed,{name:n,pts:drawPts.slice(),dist:Math.round(pathLen(drawPts)),elev:null,steps:null});editingCourse=null}else S.courses.unshift({id:uid(),name:n,pts:drawPts.slice(),dist:Math.round(pathLen(drawPts))});save('courses');drawPts=[];redrawDraw();renderCourseList();toast('코스를 저장했어요')};
 $('#btnMyLoc').onclick=()=>{if(!navigator.geolocation){toast('위치를 쓸 수 없어요');return}navigator.geolocation.getCurrentPosition(p=>{const ll=[p.coords.latitude,p.coords.longitude];window._lastFix=ll;
  if(cMap){cMap.setView(ll,15);if(myMarker)myMarker.setLatLng(ll);else myMarker=L.circleMarker(ll,{radius:8,color:'#fff',weight:2,fillColor:'#3b82f6',fillOpacity:1}).addTo(cMap)}},()=>toast('위치를 가져오지 못했어요'),{enableHighAccuracy:true,timeout:15000})};
 function renderCourseList(){const el=$('#courseList');if(!S.courses.length){el.innerHTML='<p class="sub">아직 저장한 코스가 없어요. \'코스 그리기\'로 만들어 보세요.</p>';return}
- el.innerHTML=S.courses.map(c=>`<div class="it"><div><b>${esc(c.name)}</b><div class="sub">${fmtKm(c.dist)} km</div></div><div class="row" style="flex:none;gap:6px">
+ el.innerHTML=S.courses.map(c=>`<div class="it"><div><b>${esc(c.name)}</b><div class="sub">${fmtKm(c.dist)} km${c.elev?' · 오르막 +'+elevStats(c.elev).gain+'m':''}</div></div><div class="row" style="flex:none;gap:6px">
  <button class="sm" data-v="${c.id}">보기</button><button class="sm pri" data-u="${c.id}">달리기</button><button class="sm danger" data-d="${c.id}">삭제</button></div></div>`).join('');
- el.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{const c=S.courses.find(x=>x.id===b.dataset.v);cMode='draw';drawPts=c.pts.slice();renderCourse();if(cMap&&c.pts.length>1)cMap.fitBounds(L.latLngBounds(c.pts).pad(0.2));window.scrollTo(0,0)});
+ el.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>courseSheet(b.dataset.v));
  el.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{go('home');$('#selCourse').value=b.dataset.u;toast('코스를 선택했어요. 시작을 누르세요')});
  el.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{if(await confirmBox('이 코스를 삭제할까요?','삭제',true)){S.courses=S.courses.filter(x=>x.id!==b.dataset.d);save('courses');renderCourseList()}})}
 
 /* ================= 목적지 길안내 (코스 탭) ================= */
-let destLL=null,destMarker=null,destLine=null,destRoute=null;
+let destLL=null,destMarker=null,destLine=null,destRoute=null,navProf='foot',navVia=[],viaMode=false,viaLayer=null,destBusy=false;
+INFO.prof=['경로 종류','도보: 인도·보행로 위주의 일반 도보 경로예요.\n자전거길·강변 우선: 자전거 경로 데이터로 찾아서 하천변 자전거길과 그 옆 산책로를 우선으로 지나가요. 차도 옆 자전거도로가 섞일 수 있으니 경유지로 원하는 길을 지정해 주세요.'];
+INFO.via=['경유지','자동 경로가 마음에 안 들 때, 지나가고 싶은 지점(예: 강변길 위 한 점)을 지도에서 탭해 추가하세요. 경로가 경유지를 순서대로 거쳐 가도록 다시 계산돼요. 최대 5곳.'];
 function renderNavPanel(){const el=$('#navPanel');if(cMode!=='nav'){el.style.display='none';return}el.style.display='block';
+ const st=destRoute&&destRoute.elev?elevStats(destRoute.elev):null;
  el.innerHTML=`<div class="row" style="margin:8px 0"><input id="dq" placeholder="목적지 검색 (예: 수성못)" style="flex:3"><button class="sm pri" id="dqGo" style="flex:none">검색</button></div>
   <div id="dqRes" class="list"></div>
-  <div class="sub" style="margin:4px 0 8px">${destLL?'':'검색하거나 지도를 탭해서 목적지를 정하세요. 출발지는 내 위치예요.'}</div>
-  ${destRoute?`<div class="card" style="margin-bottom:8px"><div class="row"><div><div class="lbl">도보 경로</div><div class="num" style="font-size:26px">${fmtKm(destRoute.dist)}<small>km</small></div></div><div style="text-align:right"><div class="lbl" style="justify-content:flex-end">예상 시간 (편한 조깅)</div><b style="font-size:20px">${fmtTime(destRoute.dist/1000*S.settings.easyPace)}</b></div></div>
-   <div class="sub">회전 안내 ${destRoute.steps.length}곳 · ${destRoute.src==='tmap'?'티맵':'OpenStreetMap'} 경로</div></div>
+  <div class="row" style="margin:4px 0"><span class="small mute" style="flex:none">경로 ${infoBtn('prof')}</span><div class="seg2" id="pfSeg" style="margin:0;flex:1"><span data-p="foot" class="${navProf==='foot'?'on':''}">도보</span><span data-p="bike" class="${navProf==='bike'?'on':''}">자전거길·강변 우선</span></div></div>
+  <div class="row" style="margin:6px 0"><button class="sm ${viaMode?'pri':''}" id="viaBtn" style="flex:none">${viaMode?'✓ 경유지 찍는 중':'+ 경유지 추가'}</button>${infoBtn('via')}<span class="small mute">${navVia.length?navVia.map((v,i)=>`<span class="chip" data-vx="${i}" style="margin:0 4px 0 0">${i+1} ✕</span>`).join(''):'경유지 없음'}</span></div>
+  <div class="sub" style="margin:4px 0 8px">${viaMode?'지도에서 지나갈 지점을 탭하세요. 다 찍으면 버튼을 다시 누르세요.':destLL?'':'검색하거나 지도를 탭해서 목적지를 정하세요. 출발지는 내 위치예요.'}</div>
+  ${destBusy?'<p class="sub">경로 찾는 중…</p>':''}
+  ${destRoute?`<div class="card" style="margin-bottom:8px"><div class="row"><div><div class="lbl">${navProf==='bike'?'자전거길·강변 경로':'도보 경로'}</div><div class="num" style="font-size:26px">${fmtKm(destRoute.dist)}<small>km</small></div></div><div style="text-align:right"><div class="lbl" style="justify-content:flex-end">예상 시간 (편한 조깅)</div><b style="font-size:20px">${fmtTime(destRoute.dist/1000*S.settings.easyPace)}</b></div></div>
+   <div class="sub">회전 안내 ${destRoute.steps.length}곳${st?` · 오르막 +${st.gain}m / 내리막 -${st.loss}m · 업힐 ${(destRoute.hills||[]).filter(h=>h.type==='up').length}곳`:''} · ${destRoute.src==='tmap'?'티맵':'OpenStreetMap'}</div>
+   ${destRoute.elev&&destRoute.elev.length>3?areaGraph(destRoute.elev,{unit:'m',h:90}):''}</div>
    <div class="btns" style="margin-top:0"><button class="pri" id="dRun">🧭 이 경로로 달리기</button><button id="dSaveC">코스로 저장</button></div>`:''}
-  ${destLL&&!destRoute?'<button class="pri" id="dFind" style="width:100%;padding:13px">경로 찾기</button>':''}
-  ${destLL?'<button class="sm ghost" id="dReset" style="width:100%;margin-top:8px">목적지 지우기</button>':''}`;
+  ${destLL&&!destRoute&&!destBusy?'<button class="pri" id="dFind" style="width:100%;padding:13px">경로 찾기</button>':''}
+  ${destLL||navVia.length?'<button class="sm ghost" id="dReset" style="width:100%;margin-top:8px">목적지·경유지 지우기</button>':''}`;
  const q=el.querySelector('#dq');el.querySelector('#dqGo').onclick=async()=>{const t=q.value.trim();if(!t)return;el.querySelector('#dqRes').innerHTML='<p class="sub">찾는 중…</p>';
   try{const rs=await geocode(t);el.querySelector('#dqRes').innerHTML=rs.length?rs.map((r,i)=>`<div class="it" data-i="${i}" style="cursor:pointer;font-size:13px">${esc(r.name)}</div>`).join(''):'<p class="sub">검색 결과가 없어요. 지도를 탭해 목적지를 정해 보세요.</p>';
-   el.querySelectorAll('#dqRes [data-i]').forEach(x=>x.onclick=()=>{setDest(rs[+x.dataset.i].ll);cMap&&cMap.setView(destLL,15)})}catch(e){el.querySelector('#dqRes').innerHTML='<p class="sub">검색에 실패했어요. 인터넷 연결을 확인하거나 지도를 탭해 주세요.</p>'}};
+   el.querySelectorAll('#dqRes [data-i]').forEach(x=>x.onclick=()=>{viaMode=false;setDest(rs[+x.dataset.i].ll);cMap&&cMap.setView(destLL,15)})}catch(e){el.querySelector('#dqRes').innerHTML='<p class="sub">검색에 실패했어요. 인터넷 연결을 확인하거나 지도를 탭해 주세요.</p>'}};
  q.onkeydown=e=>{if(e.key==='Enter')el.querySelector('#dqGo').click()};
+ el.querySelectorAll('#pfSeg span').forEach(x=>x.onclick=()=>{navProf=x.dataset.p;if(destLL)findDestRoute();else renderNavPanel()});
+ el.querySelector('#viaBtn').onclick=()=>{viaMode=!viaMode;if(!viaMode&&destLL)findDestRoute();else renderNavPanel()};
+ el.querySelectorAll('[data-vx]').forEach(x=>x.onclick=()=>{navVia.splice(+x.dataset.vx,1);drawVia();if(destLL)findDestRoute();else renderNavPanel()});
  const f=el.querySelector('#dFind');if(f)f.onclick=findDestRoute;
- const rr=el.querySelector('#dReset');if(rr)rr.onclick=()=>{destLL=null;destRoute=null;if(destMarker){destMarker.remove();destMarker=null}if(destLine)destLine.setLatLngs([]);renderNavPanel()};
+ const rr=el.querySelector('#dReset');if(rr)rr.onclick=()=>{destLL=null;destRoute=null;navVia=[];viaMode=false;drawVia();if(destMarker){destMarker.remove();destMarker=null}if(destLine)destLine.setLatLngs([]);renderNavPanel()};
  const run=el.querySelector('#dRun');if(run)run.onclick=()=>{window._navRoute=destRoute;go('home');$('#selCourse').value='nav';selMode='outdoor';$$('#modeSeg span').forEach(x=>x.classList.toggle('on',x.dataset.m==='outdoor'));renderModeOpts();toast('길안내 경로를 선택했어요. 시작을 누르세요')};
- const sc=el.querySelector('#dSaveC');if(sc)sc.onclick=async()=>{const n=await inputBox('코스 이름','목적지 코스');if(!n)return;S.courses.unshift({id:uid(),name:n,pts:destRoute.pts,dist:Math.round(destRoute.dist),steps:destRoute.steps});save('courses');renderCourseList();renderNavPanel();toast('코스로 저장했어요')}}
+ const sc=el.querySelector('#dSaveC');if(sc)sc.onclick=async()=>{const n=await inputBox('코스 이름','목적지 코스');if(!n)return;S.courses.unshift({id:uid(),name:n,pts:destRoute.pts.map(p=>[+p[0].toFixed(6),+p[1].toFixed(6)]),dist:Math.round(destRoute.dist),steps:destRoute.steps,elev:destRoute.elev||null});save('courses');renderCourseList();renderNavPanel();toast('코스로 저장했어요')}}
+function drawVia(){if(!hasL()||!cMap)return;if(!viaLayer)viaLayer=L.layerGroup().addTo(cMap);viaLayer.clearLayers();navVia.forEach((v,i)=>L.marker(v,{icon:L.divIcon({className:'',html:`<div style="background:#f59e0b;color:#000;border-radius:50%;width:24px;height:24px;line-height:24px;text-align:center;font-weight:800;border:2px solid #fff">${i+1}</div>`,iconSize:[24,24],iconAnchor:[12,12]})}).addTo(viaLayer))}
+function navMapTap(ll){if(viaMode){if(navVia.length>=5){toast('경유지는 5곳까지예요');return}navVia.push(ll);drawVia();renderNavPanel();return}setDest(ll)}
 function setDest(ll){destLL=ll;destRoute=null;if(destLine)destLine.setLatLngs([]);if(hasL()&&cMap){if(destMarker)destMarker.setLatLng(ll);else destMarker=L.marker(ll).addTo(cMap)}renderNavPanel();findDestRoute()}
-async function findDestRoute(){if(!destLL)return;const go2=async from=>{const b=$('#dFind');if(b){b.disabled=true;b.textContent='경로 찾는 중…'}
-  try{destRoute=await fetchRoute(from,destLL);if(hasL()&&cMap){if(!destLine)destLine=L.polyline([],{color:'#3b82f6',weight:5}).addTo(cMap);destLine.setLatLngs(destRoute.pts);cMap.fitBounds(destLine.getBounds(),{padding:[30,30]})}}
-  catch(e){toast('경로를 찾지 못했어요. 목적지를 길 가까이 다시 찍어 보세요.')}renderNavPanel()};
+async function findDestRoute(){if(!destLL)return;const go2=async from=>{destBusy=true;renderNavPanel();
+  try{destRoute=await fetchRoute(from,destLL,{profile:navProf,via:navVia});if(hasL()&&cMap){if(!destLine)destLine=L.polyline([],{color:'#3b82f6',weight:5}).addTo(cMap);destLine.setLatLngs(destRoute.pts);cMap.fitBounds(destLine.getBounds(),{padding:[30,30]})}
+   destBusy=false;renderNavPanel();await attachHills(destRoute)}
+  catch(e){toast('경로를 찾지 못했어요. 목적지를 길 가까이 다시 찍어 보세요.')}destBusy=false;renderNavPanel()};
  if(window._lastFix&&Date.now()-(window._lastFixT||0)<120000)return go2(window._lastFix);
  navigator.geolocation.getCurrentPosition(p=>{window._lastFix=[p.coords.latitude,p.coords.longitude];window._lastFixT=Date.now();go2(window._lastFix)},()=>toast('내 위치를 알 수 없어요. 위치 권한을 확인해 주세요.'),{enableHighAccuracy:true,timeout:15000})}
+
+/* ================= 코스 상세 (고저도) ================= */
+INFO.hill=['업힐 안내','코스의 고도 정보로 오르막·내리막 구간을 미리 찾아, 달리는 중 "200미터 앞부터 400미터 업힐입니다"처럼 알려줘요. 고도는 약 90m 간격 지형 데이터라 아주 짧은 언덕은 빠질 수 있고, 다리·고가 위는 실제와 다를 수 있어요. 한 번 달린 뒤 "기록 고도로 업데이트"를 누르면 더 정확해져요.'];
+function kmElev(el){const out=[];if(!el||el.length<2)return out;let k=1000,g=0,l=0;for(let i=1;i<el.length;i++){const d=el[i][1]-el[i-1][1];if(d>0)g+=d;else l-=d;if(el[i][0]>=k||i===el.length-1){out.push({km:el[i][0]>=k?k/1000:+(el[i][0]/1000).toFixed(2),gain:Math.round(g),loss:Math.round(l),grade:Math.round((g-l)/Math.max(1,el[i][0]-(k-1000))*1000)/10});g=0;l=0;k+=1000}}return out}
+async function courseSheet(id){const c=S.courses.find(x=>x.id===id);if(!c)return;
+ const draw=()=>{const st=c.elev?elevStats(c.elev):null;const hills=c.elev?detectHills(c.elev):[];const ks=kmElev(c.elev);
+  sheet(`<h3>${esc(c.name)}</h3><div class="sub">${fmtKm(c.dist)}km · ${c.steps?c.steps.length:geoSteps(c.pts).length}개 회전 지점</div>
+  <div id="csMap" class="mapbox" style="margin-top:10px"></div>
+  ${st?`<div class="grid3" style="margin-top:0"><div class="st"><b>+${st.gain}</b><span>총 오르막 m</span></div><div class="st"><b>-${st.loss}</b><span>총 내리막 m</span></div><div class="st"><b>${st.max-st.min}</b><span>고도차 m</span></div></div>
+   <div class="card" style="margin-top:10px"><div class="row"><b>고도</b><span class="sub" style="text-align:right">최고 ${st.max}m · 최저 ${st.min}m</span></div>${areaGraph(c.elev,{unit:'m'})}</div>
+   <div class="card"><b>⛰ 업힐·다운힐 ${infoBtn('hill')}</b>${hills.length?`<table>${hills.map(h=>`<tr><td>${h.type==='up'?'⬆ 업힐':'⬇ 다운힐'}</td><td>${(h.start/1000).toFixed(2)}km부터</td><td>${h.len}m</td><td>${h.grade}%</td></tr>`).join('')}</table>`:'<div class="sub">기준(경사 '+(S.settings.hillGrade||3)+'%, '+(S.settings.hillLen||100)+'m 이상)에 맞는 언덕이 없어요.</div>'}</div>
+   <div class="card"><b>1km 구간 고저도</b><table><tr><th>km</th><th>오르막</th><th>내리막</th><th>평균 경사</th></tr>${ks.map(k=>`<tr><td>${k.km}</td><td>+${k.gain}m</td><td>-${k.loss}m</td><td>${k.grade}%</td></tr>`).join('')}</table></div>`
+   :`<div class="card" style="margin-top:10px"><b>고도 정보</b><div class="sub" id="csLoad">고도 정보를 불러오는 중…</div></div>`}
+  <div class="btns"><button class="pri" id="csRun">이 코스로 달리기</button><button id="csEdit">지도에서 편집</button></div>
+  <div class="btns"><button id="csRe">고도 다시 받기</button><button id="csRun2">기록 고도로 업데이트</button></div>
+  <div class="btns"><button id="csGpx">GPX 내보내기</button><button class="danger" id="csDel">삭제</button></div><div class="btns"><button id="csX">닫기</button></div>`,s=>{
+   if(hasL()){const m=mkMap('csMap');const ln=L.polyline(c.pts,{color:'#22c55e',weight:5}).addTo(m);L.circleMarker(c.pts[0],{radius:6,color:'#fff',fillColor:'#22c55e',fillOpacity:1}).addTo(m);
+    if(c.elev){detectHills(c.elev).filter(h=>h.type==='up').forEach(h=>{const cum=cumDist(c.pts),sc=c.dist/Math.max(1,cum[cum.length-1]);const seg=c.pts.filter((p,i)=>cum[i]*sc>=h.start&&cum[i]*sc<=h.end);if(seg.length>1)L.polyline(seg,{color:'#f59e0b',weight:7}).addTo(m)})}
+    setTimeout(()=>{m.invalidateSize();m.fitBounds(ln.getBounds(),{padding:[20,20]})},150)}
+   s.querySelector('#csX').onclick=closeSheet;
+   s.querySelector('#csRun').onclick=()=>{closeSheet();go('home');$('#selCourse').value=c.id;toast('코스를 선택했어요. 시작을 누르세요')};
+   s.querySelector('#csEdit').onclick=()=>{closeSheet();cMode='draw';drawPts=c.pts.slice();editingCourse=c.id;renderCourse();if(cMap&&c.pts.length>1)cMap.fitBounds(L.latLngBounds(c.pts).pad(0.2));window.scrollTo(0,0)};
+   s.querySelector('#csRe').onclick=async()=>{c.elev=null;draw();await loadElev()};
+   s.querySelector('#csRun2').onclick=()=>{const r=S.runs.find(x=>x.course===c.name&&x.tl&&x.tl.some(p=>p[3]!=null));if(!r){toast('이 코스로 달린 기록 중 고도 정보가 있는 기록이 없어요');return}
+    const sc=c.dist/Math.max(1,r.dist);c.elev=r.tl.filter(p=>p[3]!=null).map(p=>[Math.round(p[1]*sc),p[3]]);save('courses');toast('기록한 실제 고도로 업데이트했어요');draw()};
+   s.querySelector('#csGpx').onclick=()=>exportCourseGpx(c);
+   s.querySelector('#csDel').onclick=async()=>{if(await confirmBox('이 코스를 삭제할까요?','삭제',true)){S.courses=S.courses.filter(x=>x.id!==c.id);save('courses');renderCourseList()}else draw()}})};
+ const loadElev=async()=>{try{c.elev=await fetchElev(c.pts);save('courses');if($('#csLoad')||$('#csMap'))draw()}catch(e){const l=$('#csLoad');if(l)l.textContent='고도 정보를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'}};
+ draw();if(!c.elev)loadElev()}
+function exportCourseGpx(c){const x=`<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Just Run" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(c.name)}</name><trkseg>\n${c.pts.map(p=>`<trkpt lat="${p[0]}" lon="${p[1]}"/>`).join('\n')}\n</trkseg></trk></gpx>`;
+ const f=new File([x],`${c.name.replace(/[\\/:*?"<>|]/g,'_')}.gpx`,{type:'application/gpx+xml'});(async()=>{try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e.name==='AbortError')return}const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove()})()}
+
+/* ================= GPX·KML 불러오기 ================= */
+INFO.import=['코스 파일 불러오기','스트라바·가민·트랭글·램블러 등에서 받은 GPX 파일, 구글 내 지도(My Maps)에서 내보낸 KML 파일을 코스로 불러와요. 파일에 고도가 있으면 고저도도 같이 들어와요. (네이버 지도는 경로 파일 내보내기를 지원하지 않아요)'];
+function parseCourseFile(text,fname){const doc=new DOMParser().parseFromString(text,'application/xml');if(doc.querySelector('parsererror'))throw new Error('파일을 읽을 수 없어요');
+ let pts=[],ele=[];const nm=(doc.querySelector('trk > name, rte > name, metadata > name, Document > name, Placemark > name')||{}).textContent;
+ const tp=[...doc.getElementsByTagName('trkpt')],gp=tp.length?tp:[...doc.getElementsByTagName('rtept')];
+ if(gp.length){gp.forEach(p=>{pts.push([+(+p.getAttribute('lat')).toFixed(6),+(+p.getAttribute('lon')).toFixed(6)]);const e=p.getElementsByTagName('ele')[0];ele.push(e?parseFloat(e.textContent):null)})}
+ else{const ls=[...doc.getElementsByTagName('LineString')];const co=ls.length?ls.map(l=>(l.getElementsByTagName('coordinates')[0]||{}).textContent||'').join(' '):[...doc.getElementsByTagNameNS('*','coord')].map(c=>c.textContent.trim().split(/\s+/).join(',')).join(' ');
+  co.trim().split(/\s+/).forEach(t=>{const v=t.split(',').map(Number);if(v.length>=2&&isFinite(v[0])&&isFinite(v[1])){pts.push([+v[1].toFixed(6),+v[0].toFixed(6)]);ele.push(v.length>2&&isFinite(v[2])?v[2]:null)}})}
+ if(pts.length<2)throw new Error('경로를 찾을 수 없어요');
+ const o=[pts[0]],oe=[ele[0]];for(let i=1;i<pts.length;i++){if(hav(o[o.length-1],pts[i])>=5||i===pts.length-1){o.push(pts[i]);oe.push(ele[i])}}
+ let elev=null;if(oe.filter(x=>x!=null).length>o.length*.8){const cum=cumDist(o);elev=[];let last=-99;o.forEach((p,i)=>{if(oe[i]!=null&&(cum[i]-last>=25||i===o.length-1)){elev.push([Math.round(cum[i]),Math.round(oe[i]*10)/10]);last=cum[i]}})}
+ return{id:uid(),name:(nm||fname.replace(/\.(gpx|kml)$/i,'')).trim().slice(0,40)||'불러온 코스',pts:o,dist:Math.round(pathLen(o)),elev}}
+function importCourse(){const inp=document.createElement('input');inp.type='file';inp.accept='.gpx,.kml,application/gpx+xml,application/vnd.google-earth.kml+xml,text/xml,application/xml';
+ inp.onchange=async()=>{const f=inp.files[0];if(!f)return;try{const c=parseCourseFile(await f.text(),f.name);S.courses.unshift(c);save('courses');renderCourseList();toast(`'${c.name}' 코스를 불러왔어요 (${fmtKm(c.dist)}km)`);courseSheet(c.id)}catch(e){toast(e.message||'불러오기에 실패했어요')}};inp.click()}
+
+/* ================= 캡처 이미지 따라 그리기 ================= */
+INFO.trace=['캡처 따라 그리기','네이버·카카오 지도 등에서 그린 코스를 캡처해 불러오면 지도 위에 반투명하게 겹쳐 보여요. 이미지는 화면에 고정되어 있으니, 아래 지도를 두 손가락으로 움직이고 확대해서 이미지의 길과 맞춘 뒤 코스 선을 따라 탭하세요. 투명도는 슬라이더로 조절해요.'];
+let traceUrl=null,traceOp=.5;
+function traceImage(){const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=()=>{const f=inp.files[0];if(!f)return;if(traceUrl)URL.revokeObjectURL(traceUrl);traceUrl=URL.createObjectURL(f);cMode='draw';renderCourse();renderTrace();toast('지도를 움직여 이미지와 맞춘 뒤 선을 따라 탭하세요')};inp.click()}
+function renderTrace(){let ov=$('#traceOv');const wrap=$('#cmWrap');if(!traceUrl||cMode!=='draw'){if(ov)ov.remove();const tb=$('#traceBar');if(tb)tb.style.display='none';return}
+ if(!ov){ov=document.createElement('div');ov.id='traceOv';ov.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:450;border-radius:16px;overflow:hidden';wrap.appendChild(ov)}
+ ov.innerHTML=`<img src="${traceUrl}" style="width:100%;height:100%;object-fit:contain;opacity:${traceOp}">`;
+ const tb=$('#traceBar');tb.style.display='flex';tb.innerHTML=`<span class="small mute" style="flex:none">📷 투명도</span><input type="range" min="10" max="90" value="${traceOp*100}" id="trOp" style="flex:1;padding:0"><button class="sm" id="trHide" style="flex:none">${ov.style.display==='none'?'보이기':'숨기기'}</button><button class="sm danger" id="trDel" style="flex:none">이미지 빼기</button>${infoBtn('trace')}`;
+ tb.querySelector('#trOp').oninput=e=>{traceOp=e.target.value/100;const im=ov.querySelector('img');if(im)im.style.opacity=traceOp};
+ tb.querySelector('#trHide').onclick=()=>{ov.style.display=ov.style.display==='none'?'':'none';renderTrace()};
+ tb.querySelector('#trDel').onclick=()=>{URL.revokeObjectURL(traceUrl);traceUrl=null;renderTrace()}}
+
+/* ================= 전체 경로 지도 ================= */
+function allRoutesSheet(period='all'){const now=new Date();const from=period==='m'?new Date(now.getFullYear(),now.getMonth(),1):period==='y'?new Date(now.getFullYear(),0,1):new Date(0);
+ const runs=S.runs.filter(r=>r.date>=from.getTime()&&r.track&&r.track.length>1);
+ sheet(`<h3>🗺️ 내가 달린 모든 길</h3><div class="seg2" id="arSeg">${[['m','이번 달'],['y','올해'],['all','전체']].map(([k,t])=>`<span data-k="${k}" class="${k===period?'on':''}">${t}</span>`).join('')}</div>
+ <div id="arMap" style="height:60vh;border-radius:16px;overflow:hidden;background:var(--card2)"></div>
+ <div class="sub" style="margin-top:6px">${runs.length}회 · ${sumDist(runs).toFixed(1)}km</div><div class="btns"><button id="arX">닫기</button></div>`,s=>{
+  s.querySelectorAll('#arSeg span').forEach(x=>x.onclick=()=>allRoutesSheet(x.dataset.k));s.querySelector('#arX').onclick=closeSheet;
+  if(!hasL()){s.querySelector('#arMap').innerHTML='<p class="sub" style="padding:14px">지도를 불러오지 못했어요.</p>';return}
+  const m=mkMap('arMap');const g=L.featureGroup().addTo(m);runs.forEach(r=>L.polyline(r.track,{color:'#22c55e',weight:3,opacity:.55}).addTo(g));
+  setTimeout(()=>{m.invalidateSize();if(runs.length)m.fitBounds(g.getBounds(),{padding:[20,20]});else if(window._lastFix)m.setView(window._lastFix,13)},150)})}
 
 /* ================= 기록 탭 ================= */
 let chartMode='w',grpMode='d';
@@ -1331,11 +1449,12 @@ function renderRunList(){const el=$('#runList');if(!S.runs.length){el.innerHTML=
  const lab=(k,arr)=>{if(grpMode==='d')return new Date(arr[0].date).toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'});if(grpMode==='w'){const s=new Date(k+'T00:00'),e=new Date(s);e.setDate(s.getDate()+6);return `${s.getMonth()+1}/${s.getDate()} ~ ${e.getMonth()+1}/${e.getDate()}`}const d=new Date(arr[0].date);return `${d.getFullYear()}년 ${d.getMonth()+1}월`};
  const groups=[];const map={};S.runs.slice(0,300).forEach(r=>{const k=key(r);if(!map[k]){map[k]=[];groups.push([k,map[k]])}map[k].push(r)});
  el.innerHTML=groups.map(([k,arr])=>{const d=sumDist(arr),s=arr.reduce((a,r)=>a+r.sec,0);
-  return `<div class="grp"><b>${lab(k,arr)}</b><span>${d.toFixed(1)}km · ${arr.length}회 · ${fmtPace(s/d)}</span></div><div class="card list" style="padding:2px 14px">${arr.map(r=>`<div class="it" data-id="${r.id}" style="cursor:pointer"><div><b>${fmtKm(r.dist)} km</b> ${r.journal&&r.journal.mood!=null?MOODS[r.journal.mood]:''} <span class="small mute">${esc(r.workout)}${r.mode&&r.mode!=='outdoor'?' · '+MODE_N[r.mode]:''}</span><div class="small mute">${new Date(r.date).toLocaleString('ko-KR',{month:'numeric',day:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit'})}${r.cad?' · '+r.cad+'spm':''}</div></div><div style="text-align:right;flex:none"><b>${fmtPace(paceOf(r))}</b><div class="small mute">${fmtTime(r.sec)}</div></div></div>`).join('')}</div>`}).join('');
+  return `<div class="grp"><b>${lab(k,arr)}</b><span>${d.toFixed(1)}km · ${arr.length}회 · ${fmtPace(s/d)}</span></div><div class="card list" style="padding:2px 14px">${arr.map(r=>`<div class="it" data-id="${r.id}" style="cursor:pointer">${routeSvg(r.track,46,46)}<div style="flex:1;min-width:0"><b>${fmtKm(r.dist)} km</b> ${r.journal&&r.journal.mood!=null?MOODS[r.journal.mood]:''} <span class="small mute">${esc(r.workout)}${r.mode&&r.mode!=='outdoor'?' · '+MODE_N[r.mode]:''}</span><div class="small mute">${new Date(r.date).toLocaleString('ko-KR',{month:'numeric',day:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit'})}${r.cad?' · '+r.cad+'spm':''}</div></div><div style="text-align:right;flex:none"><b>${fmtPace(paceOf(r))}</b><div class="small mute">${fmtTime(r.sec)}</div></div></div>`).join('')}</div>`}).join('');
  $$('#runList .it').forEach(e=>e.onclick=()=>openRun(e.dataset.id))}
 $('#cW').onclick=()=>{chartMode='w';$('#cW').classList.add('on');$('#cM').classList.remove('on');renderLog()};
 $('#cM').onclick=()=>{chartMode='m';$('#cM').classList.add('on');$('#cW').classList.remove('on');renderLog()};
 $$('#grpSeg span').forEach(s=>s.onclick=()=>{grpMode=s.dataset.g;$$('#grpSeg span').forEach(x=>x.classList.toggle('on',x===s));renderRunList()});
+$('#btnAllMap').onclick=()=>allRoutesSheet('all');
 $('#btnGoal').onclick=async()=>{const v=await inputBox('월간 목표 거리 (km)',S.settings.monthGoal,'',  'decimal');if(v==null)return;const n=parseFloat(v);if(n>0){S.settings.monthGoal=n;save('settings');renderLog()}};
 
 function openPB(){const pb=pbTable();sheet(`<h3>${ico('trophy','s')} 최고기록 ${infoBtn('pb')}</h3><div class="list">${PB_D.map(([D,n])=>{const p=pb[D];return `<div class="it" ${p?`data-id="${p.id}" style="cursor:pointer"`:''}><div><b>${n}</b><div class="sub">${p?new Date(p.date).toLocaleDateString('ko-KR'):'아직 기록 없음'}</div></div><div style="text-align:right"><b style="font-size:20px">${p?fmtTime(p.sec):'-'}</b><div class="sub">${p?fmtPace(p.sec/(D/1000))+'/km':''}</div></div></div>`}).join('')}</div>
@@ -1358,7 +1477,7 @@ function openRun(id,fresh){const r=S.runs.find(x=>x.id===id);if(!r)return;const 
  sheet(`<h3>${fresh?'🎉 수고하셨어요!':new Date(r.date).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'})}</h3>
  <div class="sub" style="margin-bottom:10px">${new Date(r.date).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})} · ${esc(r.workout)} · ${MODE_N[r.mode||'outdoor']}${r.course?' · '+esc(r.course):''}${shoe?' · 👟 '+esc(shoe.name):''}</div>
  ${newPB.length?`<div class="card" style="background:var(--gs);border-color:var(--g)"><b>${ico('trophy','s')} 개인 최고기록!</b><div class="sub">${newPB.map(([D,n])=>`${n} ${fmtTime(r.best[D])}`).join(' · ')}</div></div>`:''}
- ${hasMap?'<div id="detMap" class="mapbox"></div>':''}
+ ${hasMap?'<div id="detMap" class="mapbox" style="height:280px"></div>'+PACE_LEGEND:''}
  ${journalCard(r)}
  <div class="grid3" style="margin-top:0">
   <div class="st"><b>${fmtKm(r.dist)}</b><span>거리 km</span></div><div class="st"><b>${fmtTime(r.sec)}</b><span>총 시간</span></div><div class="st"><b>${fmtPace(paceOf(r))}</b><span>평균 /km</span></div>
@@ -1374,8 +1493,7 @@ function openRun(id,fresh){const r=S.runs.find(x=>x.id===id);if(!r)return;const 
  <div class="btns"><button id="rStretch">🧘 스트레칭</button>${hasMap?'<button id="rGpx">GPX 내보내기</button>':''}</div>
  <div class="btns">${hasMap?'<button id="rCourse">코스로 저장</button>':''}<button class="danger" id="rDel">삭제</button></div>
  <div class="btns"><button id="rX">닫기</button></div>`,s=>{
-  if(hasMap&&hasL()){detMap&&detMap.remove();detMap=mkMap('detMap');const ln=L.polyline(r.track,{color:'#22c55e',weight:5}).addTo(detMap);
-   L.circleMarker(r.track[0],{radius:6,color:'#fff',fillColor:'#22c55e',fillOpacity:1}).addTo(detMap);setTimeout(()=>{detMap.invalidateSize();detMap.fitBounds(ln.getBounds(),{padding:[20,20]})},150)}
+  if(hasMap&&hasL()){detMap&&detMap.remove();detMap=mkMap('detMap');const g=drawRunOnMap(detMap,r);setTimeout(()=>{detMap.invalidateSize();if(g)detMap.fitBounds(g.getBounds(),{padding:[24,24]})},150)}
   s.querySelector('#rX').onclick=closeSheet;s.querySelector('#rShare').onclick=()=>shareImg(r);s.querySelector('#jCard').onclick=()=>journalSheet(r.id,true);s.querySelector('#rStretch').onclick=stretchSheet;const gx=s.querySelector('#rGpx');if(gx)gx.onclick=()=>exportGpx(r);
   s.querySelector('#rGhost').onclick=()=>{closeSheet();go('home');$('#selGhost').value=r.id;toast('고스트를 선택했어요. 시작을 누르세요')};
   const rc=s.querySelector('#rCourse');if(rc)rc.onclick=async()=>{const n=await inputBox('코스 이름',r.course||`${new Date(r.date).toLocaleDateString('ko-KR')} 코스`);if(!n)return;const pts=r.track.map(p=>[p[0],p[1]]);S.courses.unshift({id:uid(),name:n,pts,dist:Math.round(pathLen(pts))});save('courses');toast('코스로 저장했어요')};
@@ -1478,12 +1596,83 @@ function badgeSheet(){const b=badgeList();sheet(`<h3>배지 ${b.filter(x=>x[3]).
 /* ================= 길안내 설정 ================= */
 INFO.tmap=['티맵 키','SK open API(openapi.sk.com)에 가입해 TMAP 상품의 무료 앱 키를 발급받아 넣으면, 국내 인도·횡단보도 안내가 더 정확한 티맵 보행자 경로를 써요. 비워두면 무료 공개 지도(OpenStreetMap) 경로를 써요.'];
 INFO.courseNav=['코스 내비게이션','저장한 코스를 골라 달리면 회전 지점 200m·40m 전에 방향을 알려주고, 코스에서 35m 넘게 벗어나면 알려줘요.'];
-function navSetSheet(){const ss=S.settings;sheet(`<h3>길안내</h3>
+INFO.vworld=['브이월드 지도','국토교통부가 운영하는 국가 지도로, 국내 신축 아파트·도로가 잘 반영돼요. PC에서 vworld.kr에 가입한 뒤 [오픈API → 인증키 발급]에서 2D 지도 키를 받으세요. 서비스 URL에는 tmdwns831818-sys.github.io 를 넣으면 돼요. 받은 키를 여기에 넣으면 지도 버튼에 브이월드·브이월드 위성이 추가돼요.'];
+function navSetSheet(){const ss=S.settings;sheet(`<h3>길안내·지도</h3>
  <div class="sw"><span>코스 내비게이션 안내 ${infoBtn('courseNav')}</span>${tg('nC',ss.courseNav!==false)}</div>
+ <div class="sw"><span>업힐·다운힐 안내 ${infoBtn('hill')}</span>${tg('nH',ss.hillOn!==false)}</div>
+ <div class="sw"><span>업힐 기준 경사</span><select id="nG">${[2,3,4,5,6].map(v=>opt(v,ss.hillGrade||3,v+'% 이상')).join('')}</select></div>
+ <div class="sw"><span>업힐 기준 길이</span><select id="nL">${[100,150,200,300].map(v=>opt(v,ss.hillLen||100,v+'m 이상')).join('')}</select></div>
+ <label>지도 종류</label><select id="nM">${mapTypes().map(t=>opt(t,curMapType(),TILES[t].n)).join('')}</select>
+ <label>브이월드 인증키 (선택) ${infoBtn('vworld')}</label><input id="nV" value="${esc(ss.vworldKey||'')}" placeholder="비워두면 일반·위성 지도만 사용" autocomplete="off">
  <label>티맵 앱 키 (선택) ${infoBtn('tmap')}</label><input id="nK" value="${esc(ss.tmapKey||'')}" placeholder="비워두면 무료 공개 지도 사용" autocomplete="off">
  <p class="small mute">현재 경로 검색: <b>${ss.tmapKey?'티맵 보행자 경로':'OpenStreetMap 도보 경로'}</b><br>목적지 길안내는 코스 탭 → '길안내'에서 시작해요.</p>
  <div class="btns"><button class="pri" id="nX">저장</button></div>`,s=>{s.querySelector('#nC').onchange=e=>{ss.courseNav=e.target.checked;save('settings')};
-  s.querySelector('#nX').onclick=()=>{ss.tmapKey=s.querySelector('#nK').value.trim();save('settings');closeSheet();toast(ss.tmapKey?'티맵 키를 저장했어요':'공개 지도 경로를 써요')}})}
+  s.querySelector('#nH').onchange=e=>{ss.hillOn=e.target.checked;save('settings')};s.querySelector('#nG').onchange=e=>{ss.hillGrade=+e.target.value;save('settings')};s.querySelector('#nL').onchange=e=>{ss.hillLen=+e.target.value;save('settings')};
+  s.querySelector('#nM').onchange=e=>setMapType(e.target.value);
+  s.querySelector('#nX').onclick=()=>{const vk=s.querySelector('#nV').value.trim(),had=ss.vworldKey;ss.tmapKey=s.querySelector('#nK').value.trim();ss.vworldKey=vk;if(vk&&!had)ss.mapType='vworld';save('settings');setMapType(curMapType());closeSheet();toast('길안내·지도 설정을 저장했어요')}})}
+
+/* ================= 경로 그림 / 요약 지도 ================= */
+function routeSvg(tr,w=64,h=64,color='#22c55e'){if(!tr||tr.length<2)return '';let la0=Infinity,la1=-Infinity,lo0=Infinity,lo1=-Infinity;tr.forEach(p=>{la0=Math.min(la0,p[0]);la1=Math.max(la1,p[0]);lo0=Math.min(lo0,p[1]);lo1=Math.max(lo1,p[1])});
+ const k=Math.cos((la0+la1)/2*Math.PI/180),bw=(lo1-lo0)*k||1e-6,bh=(la1-la0)||1e-6,pad=5,sc=Math.min((w-2*pad)/bw,(h-2*pad)/bh);const ox=(w-bw*sc)/2,oy=(h-bh*sc)/2;
+ const step=Math.max(1,Math.floor(tr.length/150));const d=tr.filter((p,i)=>i%step===0||i===tr.length-1).map((p,i)=>`${i?'L':'M'}${(ox+(p[1]-lo0)*k*sc).toFixed(1)},${(oy+(la1-p[0])*sc).toFixed(1)}`).join('');
+ return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="flex:none;background:var(--card2);border-radius:10px"><path d="${d}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/></svg>`}
+function paceColor(p,avg){const t=(p-avg)/avg;return t<-0.05?'#16a34a':t<0.03?'#22c55e':t<0.1?'#eab308':t<0.18?'#f97316':'#ef4444'}
+function drawRunOnMap(m,r){const tr=r.track;if(!tr||tr.length<2)return null;const cum=cumDist(tr),sc=r.dist/Math.max(1,cum[cum.length-1]);const tl=r.tl||[];
+ const tAt=d=>{if(tl.length<2)return null;for(let i=1;i<tl.length;i++)if(tl[i][1]>=d){const a=tl[i-1],b=tl[i];return a[0]+(b[0]-a[0])*(d-a[1])/Math.max(1,b[1]-a[1])}return tl[tl.length-1][0]};
+ const avg=paceOf(r);const g=L.featureGroup().addTo(m);
+ if(tl.length>3&&avg){let s=0;while(s<tr.length-1){let e=s+1;while(e<tr.length-1&&(cum[e]-cum[s])*sc<120)e++;const d0=cum[s]*sc,d1=cum[e]*sc,t0=tAt(d0),t1=tAt(d1);const p=t1!=null&&d1>d0?(t1-t0)/((d1-d0)/1000):avg;
+   L.polyline(tr.slice(s,e+1),{color:paceColor(p,avg),weight:6,opacity:.95}).addTo(g);s=e}}
+ else L.polyline(tr,{color:'#22c55e',weight:5}).addTo(g);
+ let k=1000,j=0;while(k<r.dist){while(j<cum.length-1&&cum[j+1]*sc<k)j++;if(j>=cum.length-1)break;const f=(k/sc-cum[j])/Math.max(1e-6,cum[j+1]-cum[j]);const p=[tr[j][0]+(tr[j+1][0]-tr[j][0])*f,tr[j][1]+(tr[j+1][1]-tr[j][1])*f];
+  L.marker(p,{icon:L.divIcon({className:'',html:`<div style="background:#0a0d0b;color:#fff;border:2px solid #22c55e;border-radius:10px;font-size:11px;font-weight:800;padding:0 5px;line-height:17px;white-space:nowrap">${k/1000}</div>`,iconSize:[22,20],iconAnchor:[11,10]})}).addTo(g);k+=1000}
+ L.circleMarker(tr[0],{radius:7,color:'#fff',weight:2,fillColor:'#22c55e',fillOpacity:1}).bindTooltip('출발').addTo(g);L.circleMarker(tr[tr.length-1],{radius:7,color:'#fff',weight:2,fillColor:'#0a0d0b',fillOpacity:1}).bindTooltip('도착').addTo(g);
+ return g}
+const PACE_LEGEND=`<div class="small mute" style="display:flex;gap:8px;align-items:center;margin:-4px 0 10px;flex-wrap:wrap">페이스: <span style="color:#16a34a">● 빠름</span><span style="color:#22c55e">● 평균</span><span style="color:#eab308">● 조금 느림</span><span style="color:#f97316">● 느림</span><span style="color:#ef4444">● 많이 느림</span></div>`;
+
+/* ================= 백업 알림 ================= */
+function backupDue(){const last=S.settings.lastBackup||0;const days=Math.floor((Date.now()-last)/86400000);const newer=S.runs.filter(r=>r.date>last).length;return newer>=3&&days>=14?{days:last?days:null,newer}:null}
+
+/* ================= 신발 (자동 선택·은퇴 목록) ================= */
+const SHOE_CATS=['인터벌','템포','LSD','AR','빌드업','파틀렉','회복주','언덕','자유','대회'];
+INFO.shoeUse=['신발 자동 선택','신발마다 "이 신발을 기본으로 쓸 훈련"을 정해 두면, 홈에서 훈련이나 모드를 고를 때 신발이 자동으로 바뀌어요. 우선순위: 훈련 종류 → 모드(트랙·트레드밀) → 기본 신발. 홈에서 직접 바꾸면 그 달리기에만 적용돼요.'];
+function wkCat(w){if(!w)return '자유';if(/_race$/.test(w.id))return '대회';return w.cat||'자유'}
+function shoeFor(w,mode){const act=S.shoes.filter(s=>!s.retired);const cat=wkCat(w);
+ return (act.find(s=>s.uses&&s.uses.cats&&s.uses.cats.includes(cat))||act.find(s=>s.uses&&s.uses.modes&&s.uses.modes.includes(mode))||act.find(s=>s.id===S.settings.activeShoe)||{}).id||''}
+function autoShoe(){if(window._manualShoe)return;const v=shoeFor(getWorkout($('#selWorkout').value),selMode);const sel=$('#selShoe');if([...sel.options].some(o=>o.value===v))sel.value=v}
+function shoeStats(sh){const rs=S.runs.filter(r=>r.shoe===sh.id);const long=rs.reduce((a,r)=>r.dist>a?r.dist:a,0);const fast=rs.filter(r=>r.dist>=3000).reduce((a,r)=>{const p=paceOf(r);return !a||p<a?p:a},null);
+ const first=Math.min(sh.addedAt||Infinity,...rs.map(r=>r.date));return{n:rs.length,long,fast,first:isFinite(first)?first:null,runs:rs}}
+function shoeSheet(){const act=S.shoes.filter(s=>!s.retired),ret=S.shoes.filter(s=>s.retired);
+ const row=s=>{const km=s.km||0,f=km/s.limit,u=s.uses||{};const tags=[...(u.cats||[]),...(u.modes||[]).map(m=>m==='track'?'트랙':'트레드밀')];
+  return `<div class="it" data-sh="${s.id}" style="cursor:pointer"><div style="flex:1;min-width:0"><b>👟 ${esc(s.name)}</b>${S.settings.activeShoe===s.id?' <span class="tag">기본</span>':''}
+  <div class="sub">${km.toFixed(1)} / ${s.limit} km${f>=.9?' · <span style="color:var(--bad)">교체 권장</span>':''}</div><div class="bar" style="height:6px"><i style="width:${Math.min(100,f*100)}%;background:${f>=.9?'var(--bad)':f>=.7?'var(--warn)':'var(--g)'}"></i></div>
+  ${tags.length?`<div class="small mute" style="margin-top:4px">자동 선택: ${tags.join(', ')}</div>`:''}</div>›</div>`};
+ sheet(`<h3>신발 ${infoBtn('shoeUse')}</h3>
+ <div class="lbl" style="margin-top:6px">사용 중 ${act.length}켤레</div><div class="list">${act.length?act.map(row).join(''):'<p class="sub">러닝화를 등록하면 누적 거리와 교체 시기를 알려줘요.</p>'}</div>
+ <div class="btns"><button class="pri" id="shAdd">+ 신발 추가</button></div>
+ ${ret.length?`<details class="card" style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">🏅 은퇴한 신발 ${ret.length}켤레</summary><div class="list">${ret.map(s=>{const st=shoeStats(s);return `<div class="it" data-sh="${s.id}" style="cursor:pointer"><div><b>${esc(s.name)}</b><div class="sub">${(s.km||0).toFixed(0)}km · ${st.n}회${st.first?` · ${new Date(st.first).toLocaleDateString('ko-KR',{year:'2-digit',month:'numeric'})}~${s.retiredAt?new Date(s.retiredAt).toLocaleDateString('ko-KR',{year:'2-digit',month:'numeric'}):''}`:''}</div></div>›</div>`}).join('')}</div></details>`:''}
+ <div class="btns"><button id="shX">닫기</button></div>`,s=>{
+  s.querySelectorAll('[data-sh]').forEach(x=>x.onclick=()=>shoeDetail(x.dataset.sh));s.querySelector('#shX').onclick=closeSheet;
+  s.querySelector('#shAdd').onclick=()=>sheet(`<h3>러닝화 추가</h3><label>이름</label><input id="sN" placeholder="예: 페가수스 41"><label>교체 기준 거리 (km)</label><input id="sL" type="number" value="700"><label>이미 달린 거리 (km)</label><input id="sK" type="number" value="0"><div class="btns"><button id="sX">취소</button><button class="pri" id="sO">추가</button></div>`,t=>{
+   t.querySelector('#sX').onclick=shoeSheet;t.querySelector('#sO').onclick=()=>{const n=t.querySelector('#sN').value.trim();if(!n){toast('이름을 입력하세요');return}const sh={id:uid(),name:n,limit:parseFloat(t.querySelector('#sL').value)||700,km:parseFloat(t.querySelector('#sK').value)||0,retired:false,addedAt:Date.now(),uses:{cats:[],modes:[]}};
+    S.shoes.push(sh);if(!S.settings.activeShoe){S.settings.activeShoe=sh.id;save('settings')}save('shoes');shoeDetail(sh.id)}})})}
+function shoeDetail(id){const sh=S.shoes.find(x=>x.id===id);if(!sh)return shoeSheet();sh.uses=sh.uses||{cats:[],modes:[]};const st=shoeStats(sh),u=sh.uses;
+ sheet(`<h3>👟 ${esc(sh.name)}</h3><div class="sub">${sh.retired?'은퇴한 신발':S.settings.activeShoe===sh.id?'기본 신발':'사용 중'}</div>
+ <div class="grid3"><div class="st"><b>${(sh.km||0).toFixed(0)}</b><span>누적 km</span></div><div class="st"><b>${st.n}</b><span>달린 횟수</span></div><div class="st"><b>${st.long?fmtKm(st.long):'-'}</b><span>최장 km</span></div>
+  <div class="st"><b>${st.fast?fmtPace(st.fast):'-'}</b><span>최고 페이스</span></div><div class="st"><b style="font-size:15px">${st.first?new Date(st.first).toLocaleDateString('ko-KR',{year:'2-digit',month:'numeric',day:'numeric'}):'-'}</b><span>처음 신은 날</span></div><div class="st"><b style="font-size:15px">${sh.retiredAt?new Date(sh.retiredAt).toLocaleDateString('ko-KR',{year:'2-digit',month:'numeric',day:'numeric'}):'-'}</b><span>은퇴한 날</span></div></div>
+ ${sh.retired?'':`<label>이 신발을 기본으로 쓸 훈련 ${infoBtn('shoeUse')}</label><div>${SHOE_CATS.map(c=>`<span class="chip ${u.cats.includes(c)?'on':''}" data-c="${c}">${c}</span>`).join('')}</div>
+ <label>모드</label><div>${[['track','트랙'],['treadmill','트레드밀']].map(([k,t])=>`<span class="chip ${u.modes.includes(k)?'on':''}" data-m="${k}">${t}</span>`).join('')}</div>
+ <div class="sw"><span>기본 신발 (나머지 훈련 전부)</span><input type="checkbox" class="tg" id="sdDef" ${S.settings.activeShoe===sh.id?'checked':''}></div>
+ <div class="row"><span class="small mute" style="flex:none">교체 기준</span><select id="sdLim">${[300,400,500,600,700,800,1000].map(v=>opt(v,sh.limit,v+'km')).join('')}</select></div>`}
+ <div class="card" style="margin-top:10px;padding:4px 14px"><div class="sub" style="margin:8px 0 0">이 신발로 달린 기록</div><div class="list">${st.runs.slice(0,30).map(r=>`<div class="it" data-r="${r.id}" style="cursor:pointer"><div><b>${fmtKm(r.dist)}km</b> <span class="small mute">${esc(r.workout)}</span><div class="small mute">${new Date(r.date).toLocaleDateString('ko-KR')}</div></div><b>${fmtPace(paceOf(r))}</b></div>`).join('')||'<p class="sub">아직 기록이 없어요</p>'}</div></div>
+ <div class="btns"><button id="sdRet">${sh.retired?'다시 사용':'은퇴시키기'}</button><button class="danger" id="sdDel">삭제</button></div><div class="btns"><button id="sdB">신발 목록</button></div>`,s=>{
+  s.querySelectorAll('[data-c]').forEach(x=>x.onclick=()=>{const c=x.dataset.c;u.cats=u.cats.includes(c)?u.cats.filter(z=>z!==c):[...u.cats,c];S.shoes.forEach(o=>{if(o!==sh&&o.uses&&u.cats.includes(c))o.uses.cats=o.uses.cats.filter(z=>z!==c)});save('shoes');shoeDetail(id)});
+  s.querySelectorAll('[data-m]').forEach(x=>x.onclick=()=>{const m=x.dataset.m;u.modes=u.modes.includes(m)?u.modes.filter(z=>z!==m):[...u.modes,m];S.shoes.forEach(o=>{if(o!==sh&&o.uses&&u.modes.includes(m))o.uses.modes=o.uses.modes.filter(z=>z!==m)});save('shoes');shoeDetail(id)});
+  const df=s.querySelector('#sdDef');if(df)df.onchange=e=>{S.settings.activeShoe=e.target.checked?sh.id:null;save('settings')};
+  const lm=s.querySelector('#sdLim');if(lm)lm.onchange=e=>{sh.limit=+e.target.value;save('shoes')};
+  s.querySelectorAll('[data-r]').forEach(x=>x.onclick=()=>openRun(x.dataset.r));
+  s.querySelector('#sdRet').onclick=()=>{sh.retired=!sh.retired;sh.retiredAt=sh.retired?Date.now():null;if(sh.retired){if(S.settings.activeShoe===sh.id){S.settings.activeShoe=null;save('settings')}}save('shoes');toast(sh.retired?'은퇴한 신발 목록으로 옮겼어요':'다시 사용 중으로 옮겼어요');shoeDetail(id)};
+  s.querySelector('#sdDel').onclick=async()=>{if(await confirmBox(`'${sh.name}'을 삭제할까요?`,'삭제',true,'은퇴시키면 기록과 통계가 남아요. 삭제하면 목록에서 사라져요.')){S.shoes=S.shoes.filter(x=>x.id!==id);if(S.settings.activeShoe===id){S.settings.activeShoe=null;save('settings')}save('shoes');shoeSheet()}else shoeDetail(id)};
+  s.querySelector('#sdB').onclick=shoeSheet})}
 
 /* ================= 더보기 ================= */
 const tg=(id,on)=>`<input type="checkbox" class="tg" id="${id}" ${on?'checked':''}>`;
@@ -1538,30 +1727,19 @@ function runSetSheet(){const ss=S.settings;
   s.querySelector('#rCalReset').onclick=async()=>{if(await confirmBox('트레드밀 보폭 학습을 초기화할까요?','초기화',true)){S.cal=[];save('cal');ss.strideK=1;sv()}runSetSheet()};
   s.querySelector('#rX').onclick=()=>{if(Metro.on&&R.state==='idle')Metro.stop();closeSheet()}})}
 
-function shoeSheet(){sheet(`<h3>신발</h3><div class="list">${S.shoes.length?S.shoes.map(s=>{const km=s.km||0,f=km/s.limit;return `<div class="it"><div style="flex:3"><b>${esc(s.name)}</b>${s.retired?' <span class="tag">은퇴</span>':''}${S.settings.activeShoe===s.id?' <span class="tag">기본</span>':''}
-  <div class="sub">${km.toFixed(1)} / ${s.limit} km${f>=.9?' · <span style="color:var(--bad)">교체 권장</span>':''}</div><div class="bar" style="height:6px"><i style="width:${Math.min(100,f*100)}%;background:${f>=.9?'var(--bad)':f>=.7?'var(--warn)':'var(--g)'}"></i></div></div>
-  <div style="flex:none;display:flex;flex-direction:column;gap:4px"><button class="sm" data-sd="${s.id}">기본</button><button class="sm" data-sr="${s.id}">${s.retired?'복귀':'은퇴'}</button></div></div>`}).join(''):'<p class="sub">러닝화를 등록하면 누적 거리와 교체 시기를 알려줘요.</p>'}</div>
- <div class="btns"><button class="pri" id="shAdd">+ 신발 추가</button><button id="shX">닫기</button></div>`,s=>{
-  s.querySelectorAll('[data-sd]').forEach(b=>b.onclick=()=>{S.settings.activeShoe=b.dataset.sd;save('settings');shoeSheet()});
-  s.querySelectorAll('[data-sr]').forEach(b=>b.onclick=()=>{const x=S.shoes.find(y=>y.id===b.dataset.sr);x.retired=!x.retired;if(x.retired&&S.settings.activeShoe===x.id){S.settings.activeShoe=null;save('settings')}save('shoes');shoeSheet()});
-  s.querySelector('#shX').onclick=closeSheet;
-  s.querySelector('#shAdd').onclick=()=>sheet(`<h3>러닝화 추가</h3><label>이름</label><input id="sN" placeholder="예: 페가수스 41"><label>교체 기준 거리 (km)</label><input id="sL" type="number" value="700"><label>이미 달린 거리 (km)</label><input id="sK" type="number" value="0"><div class="btns"><button id="sX">취소</button><button class="pri" id="sO">추가</button></div>`,t=>{
-   t.querySelector('#sX').onclick=shoeSheet;t.querySelector('#sO').onclick=()=>{const n=t.querySelector('#sN').value.trim();if(!n){toast('이름을 입력하세요');return}const sh={id:uid(),name:n,limit:parseFloat(t.querySelector('#sL').value)||700,km:parseFloat(t.querySelector('#sK').value)||0,retired:false};
-    S.shoes.push(sh);if(!S.settings.activeShoe){S.settings.activeShoe=sh.id;save('settings')}save('shoes');shoeSheet()}})})}
-
 function screenSheet(){const t=S.settings.theme;sheet(`<h3>화면</h3><div class="list">${[['system','아이폰 설정 따라가기'],['dark','블랙'],['light','화이트']].map(([v,n])=>`<label class="it" style="margin:0;color:var(--text);cursor:pointer"><span>${n}</span><input type="radio" name="th" value="${v}" ${t===v?'checked':''} style="width:auto"></label>`).join('')}</div><div class="btns"><button class="pri" id="tX">닫기</button></div>`,s=>{
  s.querySelectorAll('[name=th]').forEach(r=>r.onchange=()=>{S.settings.theme=r.value;save('settings');applyTheme()});s.querySelector('#tX').onclick=closeSheet})}
 
 function backupSheet(){let used=0;try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);used+=(localStorage.getItem(k)||'').length}}catch(e){}
  sheet(`<h3>백업</h3><p class="sub">기록은 이 아이폰의 Safari 안에 저장돼요. Safari 방문 기록·웹사이트 데이터를 지우면 함께 지워지니 가끔 백업해 두세요.</p>
- <p class="small mute">사용 중: 약 ${(used/1024/1024*2).toFixed(1)}MB / 약 5MB · 기록 ${S.runs.length}개</p>
+ <p class="small mute">마지막 백업: ${S.settings.lastBackup?new Date(S.settings.lastBackup).toLocaleDateString('ko-KR'):'없음'}<br>사용 중: 약 ${(used/1024/1024*2).toFixed(1)}MB / 약 5MB · 기록 ${S.runs.length}개</p>
  <div class="btns"><button class="pri" id="bE">백업 내보내기</button><button id="bI">백업 가져오기</button></div><div class="btns"><button id="bX">닫기</button></div>`,s=>{
   s.querySelector('#bX').onclick=closeSheet;
   s.querySelector('#bE').onclick=()=>{const data=JSON.stringify({app:'justrun',v:1,settings:S.settings,workouts:S.workouts,plan:S.plan,courses:S.courses,runs:S.runs,shoes:S.shoes,cal:S.cal,races:S.races});
-   const f=new File([data],`justrun-backup-${ymd(new Date())}.json`,{type:'application/json'});
-   (async()=>{try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e.name==='AbortError')return}
+   const f=new File([data],`justrun-backup-${ymd(new Date())}.json`,{type:'application/json'});const mark=()=>{S.settings.lastBackup=Date.now();save('settings')};
+   (async()=>{try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});mark();toast('백업했어요');return}}catch(e){if(e.name==='AbortError')return}
     sheet(`<h3>백업 내보내기</h3><p class="sub">아래 내용을 전부 복사해 메모 앱 등에 보관하세요.</p><textarea id="bT" readonly>${esc(data)}</textarea><div class="btns"><button id="bC" class="pri">복사</button><button id="bX2">닫기</button></div>`,t=>{
-     t.querySelector('#bX2').onclick=closeSheet;t.querySelector('#bC').onclick=()=>{navigator.clipboard.writeText(data).then(()=>toast('복사했어요')).catch(()=>{t.querySelector('#bT').select();toast('직접 선택해서 복사하세요')})}})})()};
+     t.querySelector('#bX2').onclick=closeSheet;t.querySelector('#bC').onclick=()=>{navigator.clipboard.writeText(data).then(()=>{mark();toast('복사했어요')}).catch(()=>{t.querySelector('#bT').select();toast('직접 선택해서 복사하세요')})}})})()};
   s.querySelector('#bI').onclick=()=>sheet(`<h3>백업 가져오기</h3><p class="sub">백업 파일을 고르거나 복사해 둔 내용을 붙여 넣으세요. 현재 데이터는 백업 내용으로 바뀌어요.</p><input type="file" id="bF" accept=".json,application/json,text/plain"><label>또는 붙여넣기</label><textarea id="bT"></textarea><div class="btns"><button id="bN">취소</button><button class="pri" id="bO">가져오기</button></div>`,t=>{
    t.querySelector('#bN').onclick=closeSheet;t.querySelector('#bF').onchange=e=>{const f=e.target.files[0];if(f)f.text().then(x=>t.querySelector('#bT').value=x)};
    t.querySelector('#bO').onclick=()=>{try{const d=JSON.parse(t.querySelector('#bT').value);if(!d||!Array.isArray(d.runs))throw 0;
